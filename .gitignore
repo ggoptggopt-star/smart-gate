@@ -5,3 +5,6 @@ secrets.h
 *.log
 cloudflared.exe
 data/backups/
+scratch/
+desktop-tutorial/
+1/

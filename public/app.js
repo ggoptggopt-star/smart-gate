@@ -2765,82 +2765,82 @@ function renderUnifiedStepper(r, compact = false) {
     // กรณีพิเศษ: ขั้นที่ 1 คาบว่าง หรือ ช่วงกลางวัน (ข้ามอัตโนมัติไปยังครูที่ปรึกษา)
     if (totalSteps === 5 && stepNum === 1 && step1Skipped) {
       circleHtml = `
-        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-slate-100 text-slate-500 border-2 border-dashed border-slate-400 flex items-center justify-center font-bold shrink-0" title="ข้ามอัตโนมัติ: คาบว่าง หรือ ช่วงกลางวัน">
+        <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-slate-100 text-slate-500 border-2 border-dashed border-slate-400 flex items-center justify-center font-bold shrink-0" title="ข้ามอัตโนมัติ: คาบว่าง หรือ ช่วงกลางวัน">
           <span class="leading-none font-bold">✕</span>
         </div>
       `;
-      labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-bold text-slate-500 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
+      labelTitleHtml = `<span class="text-xs font-bold text-slate-500 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
       const isLunch = r.step1SkipReason && r.step1SkipReason.includes('กลางวัน');
-      const skipTag = isLunch ? 'ช่วงกลางวัน (ผ่าน)' : 'คาบว่าง (ผ่าน)';
-      subTextHtml = `<span class="text-[8px] sm:text-[10px] text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-1.5 py-0.2 rounded mt-0.5 font-semibold leading-tight">${skipTag}</span>`;
+      const skipTag = isLunch ? 'กลางวัน' : 'คาบว่าง';
+      subTextHtml = `<span class="text-xs text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-1.5 py-0.5 rounded mt-0.5 font-semibold leading-tight">${skipTag}</span>`;
       rightConnectorClass = 'border-t-2 border-dashed border-slate-400';
     } else if (isRejected && currentStep === stepNum) {
-      // ถูกปฏิเสธในขั้นนี้ (Requirement 5 & 15: ✕ สีแดงทึบ วงกลมทึบ ข้อความ "ไม่อนุมัติ" แยกจากสีเทาชัดเจน)
+      // ถูกปฏิเสธในขั้นนี้
       circleHtml = `
-        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-rose-600 text-white border-2 border-rose-700 flex items-center justify-center font-bold shadow-md shrink-0" title="ไม่อนุมัติ">
+        <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-rose-600 text-white border-2 border-rose-700 flex items-center justify-center font-bold shadow-md shrink-0" title="ไม่อนุมัติ">
           <i class="fa-solid fa-xmark"></i>
         </div>
       `;
-      labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-bold text-rose-600 mt-1 leading-tight">ไม่อนุมัติ</span>`;
-      subTextHtml = `<span class="text-[8px] sm:text-[10px] text-rose-500 truncate max-w-[68px] sm:max-w-[90px] leading-tight">${teacherName}</span>`;
+      labelTitleHtml = `<span class="text-xs font-bold text-rose-600 mt-1 leading-tight">ไม่อนุมัติ</span>`;
+      subTextHtml = `<span class="text-xs text-rose-500 truncate max-w-[72px] sm:max-w-[90px] leading-tight">${teacherName}</span>`;
     } else if (stepNum < currentStep || isApproved) {
       // ผ่านขั้นนี้แล้ว (หรือข้ามฉุกเฉิน)
       const isEmergSkipped = emergencyOverride && !histEntry && stepNum >= currentStep;
       if (isEmergSkipped) {
         circleHtml = `
-          <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0" title="อนุมัติฉุกเฉิน">
+          <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0" title="อนุมัติฉุกเฉิน">
             <i class="fa-solid fa-bolt"></i>
           </div>
         `;
-        labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-bold text-amber-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
-        subTextHtml = `<span class="text-[8px] sm:text-[10px] text-amber-600 font-semibold leading-tight">ข้ามฉุกเฉิน</span>`;
+        labelTitleHtml = `<span class="text-xs font-bold text-amber-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
+        subTextHtml = `<span class="text-xs text-amber-600 font-semibold leading-tight">ฉุกเฉิน</span>`;
         rightConnectorClass = 'border-t-2 border-dashed border-amber-400';
       } else {
         circleHtml = `
-          <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+          <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
             <i class="fa-solid fa-check"></i>
           </div>
         `;
-        labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-bold text-emerald-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
+        labelTitleHtml = `<span class="text-xs font-bold text-emerald-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
         const delegatedBadge = histEntry?.isDelegated ? ' (แทน)' : '';
         const isDualStep = histEntry?.autoBundledWithStep1 || histEntry?.autoBundledWithStep2 || histEntry?.isDualApproved || histEntry?.isDualRole;
         const dualBadge = isDualStep ? ' (ควบ)' : '';
         subTextHtml = `
-          <span class="text-[8px] sm:text-[10px] text-emerald-600 truncate max-w-[68px] sm:max-w-[90px] leading-tight">${teacherName}${delegatedBadge}${dualBadge}</span>
-          ${isDualStep ? '<span class="text-[7px] sm:text-[8px] bg-purple-100 text-purple-700 border border-purple-200 px-1 rounded font-bold mt-0.5 leading-none">🔗 ควบ 2 ขั้น</span>' : ''}
+          <span class="text-xs text-emerald-600 truncate max-w-[72px] sm:max-w-[90px] leading-tight">${teacherName}${delegatedBadge}${dualBadge}</span>
+          ${isDualStep ? '<span class="text-[10px] bg-purple-100 text-purple-700 border border-purple-200 px-1 rounded font-bold mt-0.5 leading-none">🔗 ควบ 2 ขั้น</span>' : ''}
         `;
         rightConnectorClass = 'border-t-2 border-emerald-400';
       }
     } else if (stepNum === currentStep && !isRejected && !isExpired) {
-      // กำลังรอคิวอยู่ที่ขั้นนี้ (Requirement 3: แสดงชื่อตำแหน่ง + ชื่อครู + เวลาที่รอในขั้นนั้น)
+      // กำลังรอคิวอยู่ที่ขั้นนี้
       const waitMins = Number(r.waitingMinutes || 0);
-      const waitLabel = waitMins > 0 ? `รอ ${waitMins} นาที` : 'เพิ่งถึงคิว';
+      const waitLabel = waitMins > 0 ? `รอ ${waitMins}น.` : 'เพิ่งถึงคิว';
       circleHtml = `
-        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-blue-600 text-white ring-4 ring-blue-100 flex items-center justify-center font-bold shadow-md animate-pulse shrink-0">
+        <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-blue-600 text-white ring-4 ring-blue-100 flex items-center justify-center font-bold shadow-md animate-pulse shrink-0">
           <i class="fa-solid fa-clock"></i>
         </div>
       `;
-      labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-extrabold text-blue-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
+      labelTitleHtml = `<span class="text-xs font-extrabold text-blue-700 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
       subTextHtml = `
-        <span class="text-[8px] sm:text-[10px] text-blue-600 font-semibold truncate max-w-[70px] sm:max-w-[95px] leading-tight">${teacherName}</span>
-        <span class="text-[8px] sm:text-[9px] bg-amber-100 text-amber-800 border border-amber-200 px-1 py-0.2 rounded font-bold mt-0.5 leading-tight">${waitLabel}</span>
+        <span class="text-xs text-blue-600 font-semibold truncate max-w-[72px] sm:max-w-[95px] leading-tight">${teacherName}</span>
+        <span class="text-[11px] bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded font-bold mt-0.5 leading-tight">${waitLabel}</span>
       `;
     } else {
       // ยังไม่ถึงคิว (หรือคำร้องหมดอายุก่อนถึง)
       circleHtml = `
-        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-semibold shrink-0">
+        <div class="${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm'} rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold shrink-0">
           ${stepNum}
         </div>
       `;
-      labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
-      subTextHtml = `<span class="text-[8px] sm:text-[10px] text-slate-400 truncate max-w-[68px] sm:max-w-[90px] leading-tight">${teacherName}</span>`;
+      labelTitleHtml = `<span class="text-xs font-medium text-slate-400 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
+      subTextHtml = `<span class="text-xs text-slate-400 truncate max-w-[72px] sm:max-w-[90px] leading-tight">${teacherName}</span>`;
     }
 
     const isLast = idx === stepsDef.length - 1;
     nodesHtml += `
       <div class="flex-1 flex flex-col items-center text-center relative min-w-0 px-0.5">
         ${!isLast ? `<div class="
-          absolute top-3 sm:top-4 left-1/2 w-full -z-0 ${rightConnectorClass}
+          absolute ${compact ? 'top-3.5' : 'top-4 sm:top-4.5'} left-1/2 w-full -z-0 ${rightConnectorClass}
         "></div>` : ''}
         <div class="relative z-10 flex flex-col items-center">
           ${circleHtml}
@@ -2872,68 +2872,68 @@ function renderApprovalHistoryTimeline(r) {
       : '';
     if (h.action === 'skipped_no_class') {
       return `
-        <div class="flex items-start gap-2 text-[11px] text-slate-600 bg-slate-100/80 px-2.5 py-1.5 rounded-xl border border-dashed border-slate-300">
-          <span class="w-4 h-4 rounded-full bg-slate-200 text-slate-600 border border-dashed border-slate-400 flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">✕</span>
+        <div class="flex items-start gap-2.5 text-xs text-slate-600 bg-slate-100/90 px-3 py-2 rounded-xl border border-dashed border-slate-300">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 border border-dashed border-slate-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✕</span>
           <div class="flex-1 min-w-0">
-            <span class="font-bold text-slate-700">ขั้นที่ 1 (ครูรายวิชา): ไม่มีคาบเรียน</span>
-            <p class="text-[10px] text-slate-500">${h.note || 'ข้ามขั้นครูรายวิชาอัตโนมัติ'}</p>
+            <span class="font-bold text-slate-800">ขั้นที่ 1 (ครูรายวิชา): ไม่มีคาบเรียน</span>
+            <p class="text-xs text-slate-500">${h.note || 'ข้ามขั้นครูรายวิชาอัตโนมัติ'}</p>
           </div>
-          <span class="text-[10px] text-slate-400 shrink-0">${timeStr}</span>
+          <span class="text-xs text-slate-400 shrink-0 font-mono">${timeStr}</span>
         </div>
       `;
     }
     if (h.action === 'rejected') {
       return `
-        <div class="flex items-start gap-2 text-[11px] text-rose-800 bg-rose-50 px-2.5 py-1.5 rounded-xl border border-rose-200">
-          <span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><i class="fa-solid fa-xmark"></i></span>
+        <div class="flex items-start gap-2.5 text-xs text-rose-800 bg-rose-50 px-3 py-2 rounded-xl border border-rose-200">
+          <span class="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"><i class="fa-solid fa-xmark"></i></span>
           <div class="flex-1 min-w-0">
             <span class="font-bold">ขั้นที่ ${h.step}: ไม่อนุมัติ โดย ${h.approverName || '-'}</span>
-            <p class="text-[10px] text-rose-700">เหตุผล: ${h.note || '-'}</p>
+            <p class="text-xs text-rose-700">เหตุผล: ${h.note || '-'}</p>
           </div>
-          <span class="text-[10px] text-rose-400 shrink-0">${timeStr}</span>
+          <span class="text-xs text-rose-400 shrink-0 font-mono">${timeStr}</span>
         </div>
       `;
     }
     if (h.action === 'emergency_override') {
       return `
-        <div class="flex items-start gap-2 text-[11px] text-amber-900 bg-amber-50 px-2.5 py-1.5 rounded-xl border border-amber-300">
-          <span class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><i class="fa-solid fa-bolt"></i></span>
+        <div class="flex items-start gap-2.5 text-xs text-amber-900 bg-amber-50 px-3 py-2 rounded-xl border border-amber-300">
+          <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"><i class="fa-solid fa-bolt"></i></span>
           <div class="flex-1 min-w-0">
             <span class="font-bold">อนุมัติฉุกเฉินข้ามขั้น โดย ${h.approverName || '-'}</span>
-            <p class="text-[10px] text-amber-800">เหตุผลฉุกเฉิน: ${h.note || '-'}</p>
+            <p class="text-xs text-amber-800">เหตุผลฉุกเฉิน: ${h.note || '-'}</p>
           </div>
-          <span class="text-[10px] text-amber-600 shrink-0">${timeStr}</span>
+          <span class="text-xs text-amber-600 shrink-0 font-mono">${timeStr}</span>
         </div>
       `;
     }
     if (h.action === 'auto_expired') {
       return `
-        <div class="flex items-start gap-2 text-[11px] text-slate-600 bg-slate-100 px-2.5 py-1.5 rounded-xl border border-slate-200">
-          <span class="w-4 h-4 rounded-full bg-slate-400 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><i class="fa-solid fa-clock"></i></span>
+        <div class="flex items-start gap-2.5 text-xs text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+          <span class="w-5 h-5 rounded-full bg-slate-400 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"><i class="fa-solid fa-clock"></i></span>
           <div class="flex-1 min-w-0">
             <span class="font-bold">หมดอายุอัตโนมัติ</span>
-            <p class="text-[10px] text-slate-500">${h.note || 'ไม่ได้รับการอนุมัติครบก่อนหมดเวลาทำการ'}</p>
+            <p class="text-xs text-slate-500">${h.note || 'ไม่ได้รับการอนุมัติครบก่อนหมดเวลาทำการ'}</p>
           </div>
-          <span class="text-[10px] text-slate-400 shrink-0">${timeStr}</span>
+          <span class="text-xs text-slate-400 shrink-0 font-mono">${timeStr}</span>
         </div>
       `;
     }
     return `
-      <div class="flex items-start gap-2 text-[11px] text-emerald-800 bg-emerald-50/70 px-2.5 py-1.5 rounded-xl border border-emerald-200/80">
-        <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><i class="fa-solid fa-check"></i></span>
+      <div class="flex items-start gap-2.5 text-xs text-emerald-800 bg-emerald-50/80 px-3 py-2 rounded-xl border border-emerald-200">
+        <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"><i class="fa-solid fa-check"></i></span>
         <div class="flex-1 min-w-0">
-          <span class="font-bold">ขั้นที่ ${h.step}: อนุมัติแล้ว โดย ${h.approverName || '-'}</span>
-          ${h.isDelegated ? `<span class="ml-1 px-1.5 py-0.2 bg-amber-100 text-amber-800 border border-amber-300 rounded text-[9px] font-bold">อนุมัติแทน (${h.delegateReason || 'ครูไม่อยู่'})</span>` : ''}
-          ${h.note ? `<p class="text-[10px] text-emerald-700">${h.note}</p>` : ''}
+          <span class="font-bold text-slate-800">ขั้นที่ ${h.step}: อนุมัติแล้ว โดย ${h.approverName || '-'}</span>
+          ${h.isDelegated ? `<span class="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded text-xs font-bold">อนุมัติแทน (${h.delegateReason || 'ครูไม่อยู่'})</span>` : ''}
+          ${h.note ? `<p class="text-xs text-emerald-700">${h.note}</p>` : ''}
         </div>
-        <span class="text-[10px] text-emerald-600 shrink-0">${timeStr}</span>
+        <span class="text-xs text-emerald-600 shrink-0 font-mono">${timeStr}</span>
       </div>
     `;
   }).join('');
 
   return `
     <div class="space-y-1.5 pt-2 border-t border-slate-100">
-      <div class="text-[10px] font-bold text-slate-500 flex items-center gap-1">
+      <div class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
         <i class="fa-solid fa-list-check text-blue-500"></i> ประวัติการอนุมัติในสายงาน:
       </div>
       <div class="space-y-1">
@@ -3150,21 +3150,21 @@ function renderApprovalCards() {
             ` : ''}
 
             <!-- Student Profile Box -->
-            <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-start gap-3">
-              <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#0d55cf] flex items-center justify-center text-lg font-bold shrink-0 mt-0.5">
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex items-start gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-blue-100 text-[#0d55cf] flex items-center justify-center text-xl font-bold shrink-0 mt-0.5 shadow-2xs">
                 <i class="fa-solid fa-graduation-cap"></i>
               </div>
-              <div class="text-xs space-y-1 flex-1 min-w-0">
+              <div class="text-sm space-y-1.5 flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2">
-                  <p class="font-bold text-slate-800 text-sm truncate">${escapeHtml(r.studentName)}</p>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
-                    <i class="fa-solid fa-graduation-cap text-[9px] mr-1"></i>${escapeHtml(r.classroomName || 'ปวช.3')}
+                  <p class="font-bold text-slate-900 text-base sm:text-lg truncate">${escapeHtml(r.studentName)}</p>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
+                    <i class="fa-solid fa-graduation-cap text-xs mr-1"></i>${escapeHtml(r.classroomName || 'ปวช.3')}
                   </span>
                 </div>
-                <p class="text-slate-500">รหัสนักศึกษา: <strong>${formatStudentCode(r.studentCode)}</strong> • ${escapeHtml(r.deptName)}</p>
+                <p class="text-slate-600 text-xs sm:text-sm">รหัสนักศึกษา: <strong class="font-mono text-slate-800">${formatStudentCode(r.studentCode)}</strong> • ${escapeHtml(r.deptName)}</p>
 
-                <div class="pt-1.5 mt-1 border-t border-slate-200/70 flex items-center justify-between flex-wrap gap-1.5">
-                  <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+                <div class="pt-2 mt-1 border-t border-slate-200 flex items-center justify-between flex-wrap gap-1.5">
+                  <div class="flex items-center gap-1.5 flex-wrap text-xs">
                     <span class="text-slate-500 font-medium">สถิติเทอมนี้:</span>
                     <span class="font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md shadow-2xs">
                       ขอออก ${studentStats.totalLeaves} ครั้ง
@@ -3176,15 +3176,15 @@ function renderApprovalCards() {
                     ` : ''}
                     ${studentStats.noReturnCount > 0 ? `
                       <span class="font-black text-rose-700 bg-rose-50 border border-rose-300 px-2.5 py-0.5 rounded-md inline-flex items-center gap-1 shadow-2xs">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-600 text-[10px]"></i> ไม่สแกนกลับ ${studentStats.noReturnCount} ครั้ง
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600 text-xs"></i> ไม่สแกนกลับ ${studentStats.noReturnCount} ครั้ง
                       </span>
                     ` : `
-                      <span class="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold text-[10px]">
-                        <i class="fa-solid fa-check text-[9px]"></i> ปกติ
+                      <span class="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold text-xs">
+                        <i class="fa-solid fa-check text-xs"></i> ปกติ
                       </span>
                     `}
                   </div>
-                  <button type="button" onclick="openStudentSemesterHistory('${escapeHtml(r.studentCode || r.studentId)}', '${escapeHtml(r.studentName)}')" class="text-[11px] text-blue-600 hover:text-blue-800 font-bold hover:underline inline-flex items-center gap-1 shrink-0 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 shadow-2xs transition">
+                  <button type="button" onclick="openStudentSemesterHistory('${escapeHtml(r.studentCode || r.studentId)}', '${escapeHtml(r.studentName)}')" class="text-xs text-blue-600 hover:text-blue-800 font-bold hover:underline inline-flex items-center gap-1 shrink-0 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 shadow-2xs transition">
                     <i class="fa-regular fa-clock"></i> ดูประวัติ
                   </button>
                 </div>
@@ -3192,23 +3192,23 @@ function renderApprovalCards() {
             </div>
 
             <!-- Details Grid -->
-            <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 bg-white">
+            <div class="grid grid-cols-2 gap-2.5 text-xs sm:text-sm text-slate-700 bg-white">
               <div><span class="text-slate-400">ประเภท:</span> <strong class="text-slate-800">${escapeHtml(r.title)}</strong></div>
               <div><span class="text-slate-400">ช่วงเวลา:</span> ${(r.no_return || r.expectedReturnTime === 'NO_RETURN' || r.leaveType === 'no_return') ? `<strong class="text-amber-600 font-bold">ออก ${escapeHtml(r.departureTime || '13:00')} น. (ลากลับบ้าน)</strong>` : `<strong class="text-blue-700 font-bold">${escapeHtml(r.departureTime || '13:00')} - ${escapeHtml(r.expectedReturnTime || '15:30')} น.</strong>`}</div>
-              <div class="col-span-2"><span class="text-slate-400">เหตุผลความจำเป็น:</span> <span class="text-slate-800 font-medium">${escapeHtml(r.reason)}</span></div>
+              <div class="col-span-2"><span class="text-slate-400">เหตุผลความจำเป็น:</span> <span class="text-slate-900 font-medium">${escapeHtml(r.reason)}</span></div>
               <div class="col-span-2 flex items-center justify-between flex-wrap gap-1">
-                <div><span class="text-slate-400">ยานพาหนะ:</span> <span class="text-slate-700 font-medium">${escapeHtml(r.plateNo || '-')}</span></div>
-                ${r.parentPhone ? `<div><span class="text-slate-400">เบอร์ผู้ปกครอง:</span> <a href="tel:${escapeHtml(r.parentPhone)}" class="text-blue-600 font-bold hover:underline inline-flex items-center gap-1"><i class="fa-solid fa-phone text-[10px]"></i>${escapeHtml(r.parentPhone)}</a></div>` : ''}
+                <div><span class="text-slate-400">ยานพาหนะ:</span> <span class="text-slate-800 font-medium">${escapeHtml(r.plateNo || '-')}</span></div>
+                ${r.parentPhone ? `<div><span class="text-slate-400">เบอร์ผู้ปกครอง:</span> <a href="tel:${escapeHtml(r.parentPhone)}" class="text-blue-600 font-bold hover:underline inline-flex items-center gap-1"><i class="fa-solid fa-phone text-xs"></i>${escapeHtml(r.parentPhone)}</a></div>` : ''}
               </div>
-              <div class="col-span-2 flex items-center gap-1.5 text-xs">
+              <div class="col-span-2 flex items-center gap-1.5 text-xs sm:text-sm">
                 <span class="text-slate-400">ปลายทาง:</span>
-                <span class="font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md text-[11px] inline-flex items-center gap-1">
-                  <i class="fa-solid fa-location-dot text-indigo-500 text-[10px]"></i> ${escapeHtml(r.destination || 'ธนาคาร / สถาบันการเงิน')}
+                <span class="font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-lg text-xs inline-flex items-center gap-1">
+                  <i class="fa-solid fa-location-dot text-indigo-500 text-xs"></i> ${escapeHtml(r.destination || 'ธนาคาร / สถาบันการเงิน')}
                 </span>
               </div>
               ${(r.evidencePhoto || r.evidence_photo) ? `
                 <div class="col-span-2 pt-1">
-                  <button type="button" onclick="openEvidenceModal('${escapeHtml(r.evidencePhoto || r.evidence_photo)}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition">
+                  <button type="button" onclick="openEvidenceModal('${escapeHtml(r.evidencePhoto || r.evidence_photo)}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition">
                     <i class="fa-solid fa-paperclip text-xs"></i> ดูรูปภาพหลักฐานแนบ
                   </button>
                 </div>
@@ -3223,25 +3223,25 @@ function renderApprovalCards() {
             <!-- ประวัติการอนุมัติก่อนหน้า (Requirement 4 & 9) -->
             ${renderApprovalHistoryTimeline(r)}
 
-            <!-- Action Buttons -->
+            <!-- Action Buttons (Large, Touch-Friendly 48px+) -->
             ${isPendingInQueue ? `
               <div class="space-y-2 pt-2 border-t border-slate-100">
                 ${isDeptHeadAlsoAdvisor ? `
-                  <div class="p-2.5 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 text-xs flex items-center gap-2 font-medium">
+                  <div class="p-3 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 text-xs flex items-center gap-2 font-medium">
                     <i class="fa-solid fa-link text-purple-600 shrink-0"></i>
                     <span>คุณเป็นทั้ง <strong>ครูที่ปรึกษา</strong> และ <strong>หัวหน้าแผนก</strong> การกดอนุมัติจะผ่านทั้งขั้นที่ 2 และ 3 ในคลิกเดียว พร้อมส่งต่องานปกครอง</span>
                   </div>
                 ` : ''}
-                <div class="grid grid-cols-2 gap-2">
-                  <button onclick="rejectFromList(${r.id}, ${isDelegatingThisCard})" class="py-2.5 px-3 rounded-2xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-xmark"></i> ไม่อนุมัติ (ระบุเหตุผล)
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button onclick="rejectFromList(${r.id}, ${isDelegatingThisCard})" class="py-3 px-3 rounded-2xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-xmark"></i> ไม่อนุมัติ
                   </button>
-                  <button onclick="approveFromList(${r.id}, ${rCurrentStep}, ${isDelegatingThisCard}, '${escapeHtml(waitingTeacher)}')" class="py-2.5 px-3 rounded-2xl ${isDeptHeadAlsoAdvisor ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700' : (isDelegatingThisCard ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700')} text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5 hover:scale-[1.01]">
+                  <button onclick="approveFromList(${r.id}, ${rCurrentStep}, ${isDelegatingThisCard}, '${escapeHtml(waitingTeacher)}')" class="py-3 px-3 rounded-2xl ${isDeptHeadAlsoAdvisor ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700' : (isDelegatingThisCard ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700')} text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-1.5 active:scale-95">
                     <i class="fa-solid ${isDeptHeadAlsoAdvisor ? 'fa-wand-magic-sparkles' : (isDelegatingThisCard ? 'fa-user-check' : 'fa-check')}"></i> ${approveBtnText}
                   </button>
                 </div>
                 ${canEmergencyOverride && rCurrentStep < rTotal ? `
-                  <button onclick="emergencyOverrideRequest(${r.id}, '${escapeHtml(r.requestNo)}')" class="w-full py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs transition flex items-center justify-center gap-1.5">
+                  <button onclick="emergencyOverrideRequest(${r.id}, '${escapeHtml(r.requestNo)}')" class="w-full py-3 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 active:scale-95">
                     <i class="fa-solid fa-bolt text-amber-600"></i> ข้ามขั้นกรณีฉุกเฉิน & ออก QR Pass ทันที (ต้องระบุเหตุผล)
                   </button>
                 ` : ''}
@@ -3564,55 +3564,55 @@ function renderQrPassScreen() {
 
     <!-- 2. Big QR Card Container -->
     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 text-center">
-      <div class="bg-[#0b56d0] text-white py-3 px-6 font-bold text-sm tracking-wide flex items-center justify-between">
+      <div class="bg-[#0b56d0] text-white py-3.5 px-6 font-bold text-base tracking-wide flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-qrcode"></i>
+          <i class="fa-solid fa-qrcode text-lg"></i>
           <span>OnePass QR Code สำหรับสแกนผ่านประตู</span>
         </div>
-        <span class="text-[10px] bg-white/20 border border-white/30 px-2.5 py-0.5 rounded-full font-semibold">Dynamic Pass</span>
+        <span class="text-xs bg-white/20 border border-white/30 px-3 py-1 rounded-full font-semibold">Dynamic Pass</span>
       </div>
 
       <div class="p-6 sm:p-8 flex flex-col items-center justify-center bg-white">
         <!-- Rotating QR Security Badge -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold mb-3 shadow-xs">
-          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs sm:text-sm font-bold mb-3 shadow-xs">
+          <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-ping"></span>
           <i class="fa-solid fa-arrows-rotate text-indigo-600"></i>
           <span>Rotating QR • ป้องกันการแคปภาพหน้าจอ</span>
         </div>
 
         <!-- Animated Countdown Progress Bar -->
         <div class="w-full max-w-xs mx-auto mb-4">
-          <div class="flex items-center justify-between text-xs text-slate-500 font-medium mb-1.5">
-            <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-indigo-500"></i> รหัสจะเปลี่ยนใหม่ใน:</span>
-            <span class="font-bold text-indigo-600 font-mono text-sm"><span id="rotating-countdown-text">30</span> วินาที</span>
+          <div class="flex items-center justify-between text-xs sm:text-sm text-slate-500 font-medium mb-1.5">
+            <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-indigo-500"></i> รหัสจะเปลี่ยนใหม่ใน:</span>
+            <span class="font-bold text-indigo-600 font-mono text-base"><span id="rotating-countdown-text">30</span> วินาที</span>
           </div>
-          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
             <div id="rotating-progress-bar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-1000" style="width: 100%;"></div>
           </div>
         </div>
 
         <!-- QR Box -->
-        <div id="onepass-qr-box" class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-md"></div>
+        <div id="onepass-qr-box" class="p-4 bg-white rounded-3xl border border-slate-200 shadow-md"></div>
         
         <!-- Reference Code & TOTP Badge -->
-        <div class="mt-4 px-4 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs inline-flex flex-wrap items-center justify-center gap-2 shadow-xs">
-          <span class="text-slate-400">#</span> รหัสอ้างอิง: <span id="qr-ref-code" class="font-bold text-slate-800">${token}</span>
-          <span id="qr-totp-badge" class="px-2.5 py-0.5 rounded-lg bg-indigo-600 text-white font-mono font-bold text-[11px] tracking-wider animate-pulse">LIVE</span>
+        <div class="mt-4 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs sm:text-sm inline-flex flex-wrap items-center justify-center gap-2 shadow-xs">
+          <span class="text-slate-400">#</span> รหัสอ้างอิง: <span id="qr-ref-code" class="font-bold text-slate-900">${token}</span>
+          <span id="qr-totp-badge" class="px-2.5 py-0.5 rounded-lg bg-indigo-600 text-white font-mono font-bold text-xs tracking-wider animate-pulse">LIVE</span>
         </div>
 
         <!-- Anti-Screenshot Warning Box -->
-        <div class="mt-3.5 w-full max-w-md bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2 text-amber-800 text-[11px] flex items-center justify-center gap-2 font-medium">
-          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-xs shrink-0"></i>
+        <div class="mt-3.5 w-full max-w-md bg-amber-50 border border-amber-200 rounded-2xl px-4 py-2.5 text-amber-900 text-xs sm:text-sm flex items-center justify-center gap-2 font-medium">
+          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
           <span>ห้ามแคปภาพหน้าจอส่งต่อ รหัสจะหมดอายุอัตโนมัติทุก 30 วินาที</span>
         </div>
 
         <!-- Approved Time Window Box -->
-        <div class="mt-3 w-full max-w-md bg-emerald-50/70 border border-emerald-300 rounded-2xl p-3 text-center text-emerald-900 text-xs sm:text-sm">
-          <div class="font-bold flex items-center justify-center gap-2 text-emerald-700">
-            <i class="fa-regular fa-clock"></i> เวลาที่ได้รับอนุญาต: ${r.departureTime || '13:00'} - ${r.expectedReturnTime || '15:30'} น.
+        <div class="mt-3 w-full max-w-md bg-emerald-50/80 border border-emerald-300 rounded-2xl p-3.5 text-center text-emerald-950 text-sm sm:text-base">
+          <div class="font-bold flex items-center justify-center gap-2 text-emerald-800">
+            <i class="fa-regular fa-clock text-base"></i> เวลาที่ได้รับอนุญาต: ${r.departureTime || '13:00'} - ${r.expectedReturnTime || '15:30'} น.
           </div>
-          <div class="text-xs text-emerald-600 mt-1">
-            วันที่: ${r.leaveDate || '-'}
+          <div class="text-xs sm:text-sm text-emerald-700 mt-1">
+            วันที่: ${r.leaveDate || 'วันนี้'}
           </div>
         </div>
       </div>
@@ -3623,10 +3623,10 @@ function renderQrPassScreen() {
       <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shrink-0">
         <i class="fa-solid fa-graduation-cap"></i>
       </div>
-      <div class="text-xs sm:text-sm space-y-0.5">
-        <h4 class="font-bold text-slate-800 text-base">${r.studentName}</h4>
-        <p class="text-slate-500">รหัสนักศึกษา: <strong>${formatStudentCode(r.studentCode)}</strong> (${r.classroomName || 'ปวช.3'})</p>
-        <p class="text-slate-500">ยานพาหนะ: <strong>${r.plateNo || '-'}</strong></p>
+      <div class="text-sm space-y-1">
+        <h4 class="font-bold text-slate-900 text-base sm:text-lg">${r.studentName}</h4>
+        <p class="text-slate-600">รหัสนักศึกษา: <strong class="font-mono text-slate-800">${formatStudentCode(r.studentCode)}</strong> (${r.classroomName || 'ปวช.3'})</p>
+        <p class="text-slate-600">ยานพาหนะ: <strong class="text-slate-800">${r.plateNo || '-'}</strong></p>
       </div>
     </div>
 
@@ -5478,26 +5478,26 @@ function renderStudentHistory() {
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">${idx + 1}</div>
-            <span class="font-bold text-slate-800 text-sm font-mono">${r.requestNo}</span>
+            <span class="font-bold text-slate-800 text-sm sm:text-base font-mono">${r.requestNo}</span>
             ${currentPill}
           </div>
           ${statusBadge}
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
+        <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-slate-700">
           <div><span class="text-slate-400">ประเภท:</span> <strong class="text-slate-800">${r.title || r.reason || 'ลากิจธุระ'}</strong></div>
           <div><span class="text-slate-400">วันที่:</span> <strong class="text-slate-800">${r.leaveDate || '-'}</strong></div>
           <div><span class="text-slate-400">ช่วงเวลา:</span> ${r.departureTime || '-'} - ${r.expectedReturnTime || '-'} น.</div>
           <div><span class="text-slate-400">ยานพาหนะ:</span> ${r.plateNo || '-'}</div>
           ${subjectInfoHtml}
         </div>
-        <!-- Compact Unified Stepper (Requirement 15: หน้าสถานะ หน้าประวัติ และหน้าอนุมัติใช้สัญลักษณ์ชุดเดียวกัน) -->
+        <!-- Compact Unified Stepper -->
         ${renderUnifiedStepper(r, true)}
-        <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
-          <button onclick="${clickAction}" class="px-3.5 py-1.5 ${isCurrentActive ? 'bg-[#0d55cf] text-white hover:bg-blue-700' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'} rounded-xl text-xs font-semibold transition flex items-center gap-1 shadow-sm">
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button onclick="${clickAction}" class="px-4 py-2.5 ${isCurrentActive ? 'bg-[#0d55cf] text-white hover:bg-blue-700' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'} rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
             <i class="fa-solid fa-eye"></i> ${isCurrentActive ? 'ดูสถานะปัจจุบัน' : 'ดูรายละเอียด & ประวัติอนุมัติ'}
           </button>
           ${(r.status === 'approved' && r.qrToken) ? `
-            <button onclick="${isCurrentActive ? `setViewMode('qr')` : `viewHistoricalQrPass('${r.qrToken}')`}" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1">
+            <button onclick="${isCurrentActive ? `setViewMode('qr')` : `viewHistoricalQrPass('${r.qrToken}')`}" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1.5 active:scale-95">
               <i class="fa-solid fa-qrcode"></i> เปิด QR Pass
             </button>
           ` : ''}
@@ -5819,24 +5819,24 @@ function renderHomeStatusCard() {
 
   // 1. ถ้าไม่มีคำร้อง หรือสแกนกลับเข้าสถานศึกษาแล้ว (returned) -> แสดง "ไม่มีคำขอ" (สูงครึ่งนึง กะทัดรัด)
   if (!activeRequest || activeRequest.status === 'returned') {
-    container.className = 'bg-white text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border border-slate-200 space-y-2 transition';
+    container.className = 'bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-2.5 transition';
     container.innerHTML = `
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-sm shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-base shrink-0">
             <i class="fa-solid fa-clipboard-check"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-800 text-sm leading-tight">สถานะคำขอปัจจุบัน</h3>
-            <p class="text-[10px] text-slate-400">ระบบขออนุญาต OnePass</p>
+            <h3 class="font-bold text-slate-800 text-base leading-tight">สถานะคำขอปัจจุบัน</h3>
+            <p class="text-xs text-slate-400">ระบบขออนุญาต OnePass</p>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-200 shrink-0">
+        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 shrink-0">
           <i class="fa-solid fa-circle-minus mr-0.5 text-slate-400"></i> ไม่มีคำขอ
         </span>
       </div>
-      <div class="bg-slate-50 rounded-xl px-3 py-2 border border-slate-100 text-[11px] text-slate-500 flex items-center gap-2">
-        <i class="fa-solid fa-circle-info text-blue-500 text-xs shrink-0"></i>
+      <div class="bg-slate-50 rounded-2xl px-3.5 py-2.5 border border-slate-100 text-xs sm:text-sm text-slate-600 flex items-center gap-2.5">
+        <i class="fa-solid fa-circle-info text-blue-500 text-base shrink-0"></i>
         <span>ยังไม่มีคำร้องที่เปิดใช้งาน หรือกลับเข้าสถานศึกษาเรียบร้อยแล้ว</span>
       </div>
     `;
@@ -5845,38 +5845,38 @@ function renderHomeStatusCard() {
 
   // 2. ถ้าคำร้องล่าสุดถูกไม่อนุมัติ (rejected) และยังไม่ได้กดรับทราบ
   if (activeRequest.status === 'rejected') {
-    container.className = 'bg-white text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border border-rose-200 ring-1 ring-rose-100 space-y-2.5 transition';
+    container.className = 'bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-rose-200 ring-1 ring-rose-100 space-y-3 transition';
     container.innerHTML = `
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60 flex items-center justify-center text-sm shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200/60 flex items-center justify-center text-base shrink-0">
             <i class="fa-solid fa-circle-xmark"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-800 text-sm leading-tight">คำร้องไม่ได้รับการอนุมัติ</h3>
-            <p class="text-[10px] text-rose-600 font-medium">รายการล่าสุดของคุณถูกปฏิเสธ</p>
+            <h3 class="font-bold text-slate-800 text-base leading-tight">คำร้องไม่ได้รับการอนุมัติ</h3>
+            <p class="text-xs text-rose-600 font-medium">รายการล่าสุดของคุณถูกปฏิเสธ</p>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold text-[10px] shrink-0">
+        <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold text-xs shrink-0">
           <i class="fa-solid fa-xmark mr-0.5 text-rose-500"></i> ไม่อนุมัติ
         </span>
       </div>
 
-      <div class="bg-rose-50/60 rounded-xl px-3 py-2 border border-rose-100 text-xs text-slate-700 space-y-1">
+      <div class="bg-rose-50/70 rounded-2xl px-3.5 py-2.5 border border-rose-100 text-xs sm:text-sm text-slate-700 space-y-1">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-slate-800">${activeRequest.requestNo}</span>
-          <span class="text-[11px] text-slate-500">${activeRequest.title || 'ลากิจธุระ'}</span>
+          <span class="font-bold text-slate-800 text-base font-mono">${activeRequest.requestNo}</span>
+          <span class="text-xs text-slate-500">${activeRequest.title || 'ลากิจธุระ'}</span>
         </div>
-        <p class="text-[11px] text-rose-700 font-medium">
+        <p class="text-xs sm:text-sm text-rose-700 font-medium">
           <strong>เหตุผล:</strong> ${activeRequest.rejectionReason || 'ไม่ผ่านเกณฑ์การพิจารณาอนุญาต'}
         </p>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 pt-0.5">
-        <button onclick="dismissRejectedRequest(${activeRequest.id})" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+      <div class="grid grid-cols-2 gap-2.5 pt-0.5">
+        <button onclick="dismissRejectedRequest(${activeRequest.id})" class="py-3 px-3 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 rounded-2xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-check"></i> รับทราบ
         </button>
-        <button onclick="dismissRejectedRequest(${activeRequest.id}); tryOpenLeaveForm();" class="py-2.5 px-3 bg-[#0d55cf] hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+        <button onclick="dismissRejectedRequest(${activeRequest.id}); tryOpenLeaveForm();" class="py-3 px-3 bg-[#0d55cf] hover:bg-blue-700 active:scale-95 text-white rounded-2xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-file-pen"></i> ยื่นใหม่
         </button>
       </div>
@@ -5890,7 +5890,7 @@ function renderHomeStatusCard() {
     
     // ตรวจสอบสถานะเตือน 30 นาที และสายเกิน 15 นาที
     let alertHtml = '';
-    let containerStyle = 'bg-white text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border border-emerald-200/90 space-y-2.5 transition';
+    let containerStyle = 'bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-emerald-200/90 space-y-3 transition';
 
     if (isExited && activeRequest.expectedReturnTime) {
       const now = new Date();
@@ -5900,23 +5900,23 @@ function renderHomeStatusCard() {
       const diffMins = currentMinutes - returnMinutes;
 
       if (diffMins >= 15) {
-        containerStyle = 'bg-rose-50/30 text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border-2 border-rose-400 ring-2 ring-rose-200/60 space-y-2.5 transition';
+        containerStyle = 'bg-rose-50/30 text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-rose-400 ring-2 ring-rose-200/60 space-y-3 transition';
         alertHtml = `
-          <div class="p-3 rounded-xl bg-rose-100 border border-rose-300 text-rose-900 text-xs font-bold space-y-1 animate-pulse">
+          <div class="p-3.5 rounded-2xl bg-rose-100 border border-rose-300 text-rose-900 text-xs sm:text-sm font-bold space-y-1 animate-pulse">
             <div class="flex items-center gap-2 text-rose-700">
               <i class="fa-solid fa-triangle-exclamation text-base"></i>
               <span>เลยเวลากลับเกิน 15 นาทีแล้ว! (สายแล้ว ${diffMins} นาที)</span>
             </div>
-            <p class="text-[11px] font-normal text-rose-700 pl-6">
+            <p class="text-xs font-normal text-rose-700 pl-6">
               ระบบได้ส่งแจ้งเตือนเข้า LINE ครูที่ปรึกษาและฝ่ายปกครองแล้ว กรุณารีบเดินทางกลับและสแกนเข้าประตูทันที
             </p>
           </div>
         `;
       } else if (diffMins >= -30 && diffMins < 0) {
-        containerStyle = 'bg-amber-50/30 text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border-2 border-amber-400 ring-2 ring-amber-100 space-y-2.5 transition';
+        containerStyle = 'bg-amber-50/30 text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-amber-400 ring-2 ring-amber-100 space-y-3 transition';
         alertHtml = `
-          <div class="p-2.5 rounded-xl bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold flex items-center gap-2 animate-pulse">
-            <i class="fa-solid fa-bell text-amber-600 text-sm"></i>
+          <div class="p-3 rounded-2xl bg-amber-100 border border-amber-300 text-amber-900 text-xs sm:text-sm font-bold flex items-center gap-2 animate-pulse">
+            <i class="fa-solid fa-bell text-amber-600 text-base"></i>
             <span>ใกล้ครบเวลากลับแล้ว! เหลือเวลาอีก ${Math.abs(diffMins)} นาที (กำหนดเข้า: ${activeRequest.expectedReturnTime} น.)</span>
           </div>
         `;
@@ -5927,78 +5927,78 @@ function renderHomeStatusCard() {
     container.innerHTML = `
       ${alertHtml}
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl ${isExited ? 'bg-indigo-50 text-indigo-600 border border-indigo-200/60' : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'} flex items-center justify-center text-sm shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl ${isExited ? 'bg-indigo-50 text-indigo-600 border border-indigo-200/60' : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'} flex items-center justify-center text-base shrink-0">
             <i class="fa-solid ${isExited ? 'fa-person-walking-arrow-right' : 'fa-circle-check'}"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-800 text-sm leading-tight">สถานะคำขอปัจจุบัน</h3>
-            <p class="text-[10px] ${isExited ? 'text-indigo-600' : 'text-emerald-600'} font-medium">${isExited ? 'กำลังอยู่นอกสถานศึกษา' : 'คำร้องได้รับการอนุมัติแล้ว'}</p>
+            <h3 class="font-bold text-slate-800 text-base leading-tight">สถานะคำขอปัจจุบัน</h3>
+            <p class="text-xs ${isExited ? 'text-indigo-600' : 'text-emerald-600'} font-medium">${isExited ? 'กำลังอยู่นอกสถานศึกษา' : 'คำร้องได้รับการอนุมัติแล้ว'}</p>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full ${isExited ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'} font-bold text-[10px] shrink-0">
+        <span class="px-2.5 py-1 rounded-full ${isExited ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'} font-bold text-xs shrink-0">
           <i class="fa-solid ${isExited ? 'fa-person-walking-arrow-right' : 'fa-check'} mr-0.5"></i>
           ${isExited ? 'สแกนออกแล้ว' : 'พร้อมสแกนประตู'}
         </span>
       </div>
 
-      <div class="bg-gradient-to-r from-emerald-50/60 to-slate-50/60 rounded-xl px-3 py-2 border border-emerald-100 text-xs text-slate-700 flex flex-wrap items-center justify-between gap-1">
-        <div class="flex items-center gap-1.5">
-          <span class="font-bold text-slate-800">${activeRequest.requestNo || '-'}</span>
+      <div class="bg-gradient-to-r from-emerald-50/60 to-slate-50/60 rounded-2xl px-3.5 py-2.5 border border-emerald-100 text-xs sm:text-sm text-slate-700 flex flex-wrap items-center justify-between gap-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-slate-900 font-mono text-sm sm:text-base">${activeRequest.requestNo || '-'}</span>
           <span class="text-slate-300">•</span>
           <span class="text-slate-600">${activeRequest.title || 'ลากิจธุระจำเป็น'}</span>
         </div>
-        <div class="font-semibold text-emerald-700 text-[11px]">
+        <div class="font-semibold text-emerald-700 text-xs sm:text-sm">
           <i class="fa-regular fa-clock mr-0.5"></i> ${activeRequest.departureTime || '13:00'} - ${activeRequest.expectedReturnTime || '15:30'} น.
         </div>
       </div>
 
       ${isExited ? `
         <!-- ส่วนสำหรับนักเรียนที่สแกนออกแล้ว: ปุ่ม "กลับมาแล้ว" พร้อมตัวจำลองระยะโมเดล 60 ซม. -->
-        <div class="bg-gradient-to-br from-blue-50/90 to-indigo-50/90 rounded-2xl p-3 border-2 border-blue-400 space-y-2.5 shadow-xs">
-          <div class="flex items-center justify-between text-xs">
+        <div class="bg-gradient-to-br from-blue-50/90 to-indigo-50/90 rounded-2xl p-3.5 border-2 border-blue-400 space-y-3 shadow-xs">
+          <div class="flex items-center justify-between text-xs sm:text-sm">
             <span class="font-bold text-slate-800 flex items-center gap-1.5">
               <i class="fa-solid fa-ruler-horizontal text-blue-600"></i>
               <span>ตรวจระยะโมเดล (ฐานยาว 60 ซม.)</span>
             </span>
-            <span id="student-sim-dist-badge" class="px-2 py-0.5 rounded-full text-[10.5px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <span id="student-sim-dist-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
               25 ซม. (ในระยะ ✅)
             </span>
           </div>
 
           <!-- Presets จำลองระยะโมเดลฐาน 60 ซม. -->
-          <div class="grid grid-cols-3 gap-1 text-center">
-            <button type="button" onclick="setSimDistance(25)" id="sim-btn-25" class="py-1.5 px-1 rounded-lg border text-[11px] font-bold bg-blue-100 border-blue-500 text-blue-900 shadow-2xs transition">
+          <div class="grid grid-cols-3 gap-1.5 text-center">
+            <button type="button" onclick="setSimDistance(25)" id="sim-btn-25" class="py-2 px-1 rounded-xl border text-xs font-bold bg-blue-100 border-blue-500 text-blue-900 shadow-2xs transition active:scale-95">
               🎯 25 ซม. (ในฐาน)
             </button>
-            <button type="button" onclick="setSimDistance(55)" id="sim-btn-55" class="py-1.5 px-1 rounded-lg border text-[11px] font-bold bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+            <button type="button" onclick="setSimDistance(55)" id="sim-btn-55" class="py-2 px-1 rounded-xl border text-xs font-bold bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 transition active:scale-95">
               📍 55 ซม. (ขอบฐาน)
             </button>
-            <button type="button" onclick="setSimDistance(95)" id="sim-btn-95" class="py-1.5 px-1 rounded-lg border text-[11px] font-bold bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+            <button type="button" onclick="setSimDistance(95)" id="sim-btn-95" class="py-2 px-1 rounded-xl border text-xs font-bold bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 transition active:scale-95">
               ⚠️ 95 ซม. (นอกระยะ)
             </button>
           </div>
 
           <!-- Slider 0 - 150 cm -->
-          <div class="px-1 pt-0.5 space-y-0.5">
-            <div class="flex justify-between text-[9.5px] text-slate-400 font-mono">
+          <div class="px-1 pt-0.5 space-y-1">
+            <div class="flex justify-between text-xs text-slate-500 font-mono">
               <span>0 ซม.</span>
               <span class="text-blue-700 font-bold">| เกณฑ์จำลอง 60 ซม. |</span>
               <span>150 ซม.</span>
             </div>
-            <input type="range" id="student-sim-slider" min="5" max="150" value="25" step="1" oninput="onSimSliderChange(this.value)" class="w-full accent-blue-600 cursor-pointer">
+            <input type="range" id="student-sim-slider" min="5" max="150" value="25" step="1" oninput="onSimSliderChange(this.value)" class="w-full accent-blue-600 cursor-pointer h-2">
           </div>
 
           <!-- ปุ่ม "ฉันกลับถึงวิทยาลัยแล้ว" -->
-          <button type="button" id="btn-student-return" onclick="submitStudentReturn()" class="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition">
-            <i class="fa-solid fa-person-walking-arrow-loop-left text-base"></i>
+          <button type="button" id="btn-student-return" onclick="submitStudentReturn()" class="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-md flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-person-walking-arrow-loop-left text-lg"></i>
             <span>📍 ฉันกลับถึงวิทยาลัยแล้ว</span>
           </button>
-          <p class="text-[10px] text-center text-blue-600 font-medium">ขาเข้าไม่ต้องสแกน QR ที่ป้อมยาม ให้กดปุ่มนี้เพื่อบันทึกเวลากลับทันที</p>
+          <p class="text-xs text-center text-blue-600 font-medium">ขาเข้าไม่ต้องสแกน QR ที่ป้อมยาม ให้กดปุ่มนี้เพื่อบันทึกเวลากลับทันที</p>
         </div>
       ` : `
-        <button onclick="setViewMode('qr')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition hover:scale-[1.005]">
-          <i class="fa-solid fa-qrcode text-sm"></i> เปิดดู QR Code สแกนผ่านประตู (ขาออก)
+        <button onclick="setViewMode('qr')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm flex items-center justify-center gap-2 transition">
+          <i class="fa-solid fa-qrcode text-lg"></i> เปิดดู QR Code สแกนผ่านประตู (ขาออก)
         </button>
       `}
     `;
@@ -6012,36 +6012,36 @@ function renderHomeStatusCard() {
   const waitingTeacher = getRequestWaitingTeacherName(activeRequest, curStep);
   const stepLabel = `รอ${posInfo.short} (${curStep}/${totalSteps})`;
 
-  container.className = 'bg-white text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border border-blue-200 space-y-2.5 transition';
+  container.className = 'bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-blue-200 space-y-3 transition';
   container.innerHTML = `
     <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center text-sm shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center text-base shrink-0">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
         <div>
-          <h3 class="font-bold text-slate-800 text-sm leading-tight">สถานะคำขอปัจจุบัน</h3>
-          <p class="text-[10px] text-blue-600 font-medium">รอ: ${waitingTeacher} (${posInfo.title})</p>
+          <h3 class="font-bold text-slate-800 text-base leading-tight">สถานะคำขอปัจจุบัน</h3>
+          <p class="text-xs text-blue-600 font-medium">รอ: ${waitingTeacher} (${posInfo.title})</p>
         </div>
       </div>
-      <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[10px] shrink-0">
-        <i class="fa-solid fa-hourglass-half mr-0.5 text-blue-500 text-[9px]"></i> ${stepLabel}
+      <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs shrink-0">
+        <i class="fa-solid fa-hourglass-half mr-0.5 text-blue-500 text-xs"></i> ${stepLabel}
       </span>
     </div>
 
-    <div class="bg-blue-50/40 rounded-xl px-3 py-2 border border-blue-100 text-xs text-slate-700 flex flex-wrap items-center justify-between gap-1">
-      <div class="flex items-center gap-1.5">
-        <span class="font-bold text-slate-800">${activeRequest.requestNo}</span>
+    <div class="bg-blue-50/50 rounded-2xl px-3.5 py-2.5 border border-blue-100 text-xs sm:text-sm text-slate-700 flex flex-wrap items-center justify-between gap-1.5">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-900 font-mono text-sm sm:text-base">${activeRequest.requestNo}</span>
         <span class="text-slate-300">•</span>
         <span class="text-slate-600">${activeRequest.title}</span>
       </div>
-      <span class="text-[11px] text-blue-600 font-medium"><i class="fa-regular fa-clock mr-0.5"></i> รอมาแล้ว ${activeRequest.waitingMinutes || 0} นาที</span>
+      <span class="text-xs sm:text-sm text-blue-600 font-medium"><i class="fa-regular fa-clock mr-0.5"></i> รอมาแล้ว ${activeRequest.waitingMinutes || 0} นาที</span>
     </div>
 
     ${renderUnifiedStepper(activeRequest, true)}
 
-    <button onclick="setViewMode('status')" class="w-full py-2.5 bg-[#0d55cf] hover:bg-blue-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition hover:scale-[1.005]">
-      <i class="fa-solid fa-clipboard-check text-xs"></i> ติดตามขั้นตอนการอนุมัติ (${totalSteps} ขั้น)
+    <button onclick="setViewMode('status')" class="w-full py-3.5 bg-[#0d55cf] hover:bg-blue-700 active:scale-98 text-white rounded-2xl font-bold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition">
+      <i class="fa-solid fa-clipboard-check text-base"></i> ติดตามขั้นตอนการอนุมัติ (${totalSteps} ขั้น)
     </button>
   `;
 }
@@ -6133,15 +6133,15 @@ function renderStatusPage() {
 
   container.innerHTML = `
     <!-- 1. Top Card with Unified 5-Step Progress (Requirement 3 & 15) -->
-    <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+    <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3.5">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
             <i class="fa-solid fa-clipboard-list"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-800 text-base">ลำดับขั้นตอนการอนุมัติ (${totalSteps} ขั้น)</h3>
-            <p class="text-xs text-slate-500">${!isApproved && !isRejected ? `กำลังรอ: <strong class="text-blue-700">${waitingTeacher}</strong> (${stepPos.title}) • รอมาแล้ว <strong>${r.waitingMinutes || 0} นาที</strong>` : 'ผ่านการอนุมัติครบทุกขั้นตอนแล้ว'}</p>
+            <h3 class="font-bold text-slate-800 text-base sm:text-lg">ลำดับขั้นตอนการอนุมัติ (${totalSteps} ขั้น)</h3>
+            <p class="text-xs sm:text-sm text-slate-500">${!isApproved && !isRejected ? `กำลังรอ: <strong class="text-blue-700 font-bold">${waitingTeacher}</strong> (${stepPos.title}) • รอมาแล้ว <strong>${r.waitingMinutes || 0} นาที</strong>` : 'ผ่านการอนุมัติครบทุกขั้นตอนแล้ว'}</p>
           </div>
         </div>
         <button onclick="manualRefreshStatus()" title="อัปเดตสถานะทันที" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 flex items-center gap-1.5 text-xs font-bold transition shadow-xs active:scale-95 shrink-0">
@@ -6153,28 +6153,28 @@ function renderStatusPage() {
     </div>
 
     <!-- 2. Card: รายละเอียดคำร้องขออนุญาตและไทม์ไลน์ประวัติอนุมัติ -->
-    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
-      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">
             <i class="fa-solid fa-file-lines"></i>
           </div>
-          <span class="font-bold text-slate-800 text-sm">รายละเอียดคำร้องขออนุญาต</span>
+          <span class="font-bold text-slate-800 text-base">รายละเอียดคำร้องขออนุญาต</span>
         </div>
         ${topBadge}
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 text-xs sm:text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 text-sm">
         <!-- Left Details -->
-        <div class="sm:col-span-6 space-y-1.5 text-slate-600">
-          <p><span class="text-slate-400">เลขที่คำร้อง:</span> <strong class="text-slate-800 font-mono">${r.requestNo}</strong></p>
-          <p><span class="text-slate-400">ชื่อ-สกุล:</span> <strong class="text-slate-800">${r.studentName}</strong></p>
-          <p><span class="text-slate-400">รหัสนักศึกษา:</span> ${formatStudentCode(r.studentCode)} (${r.classroomName || 'ปวช.3'})</p>
-          <p><span class="text-slate-400">แผนกวิชา:</span> ${r.deptName || '-'}</p>
-          <p><span class="text-slate-400">ประเภทลา:</span> <span class="text-blue-600 font-bold">${r.title || r.reason || 'ลากิจธุระจำเป็น'}</span></p>
-          <p><span class="text-slate-400">เวลาออก:</span> ${r.leaveDate || '-'} (${r.departureTime || '-'} - ${r.expectedReturnTime || '-'} น.)</p>
+        <div class="sm:col-span-6 space-y-2 text-slate-700">
+          <p><span class="text-slate-400">เลขที่คำร้อง:</span> <strong class="text-slate-900 font-mono">${r.requestNo}</strong></p>
+          <p><span class="text-slate-400">ชื่อ-สกุล:</span> <strong class="text-slate-900">${r.studentName}</strong></p>
+          <p><span class="text-slate-400">รหัสนักศึกษา:</span> <span class="font-mono font-bold">${formatStudentCode(r.studentCode)}</span> (${r.classroomName || 'ปวช.3'})</p>
+          <p><span class="text-slate-400">แผนกวิชา:</span> <span class="font-medium">${r.deptName || '-'}</span></p>
+          <p><span class="text-slate-400">ประเภทลา:</span> <span class="text-blue-700 font-bold">${r.title || r.reason || 'ลากิจธุระจำเป็น'}</span></p>
+          <p><span class="text-slate-400">เวลาออก:</span> <span class="font-semibold text-slate-800">${r.leaveDate || '-'} (${r.departureTime || '-'} - ${r.expectedReturnTime || '-'} น.)</span></p>
           <p><span class="text-slate-400">คาบเรียนที่ตรง:</span> ${r.step1Skipped ? `<span class="text-slate-500 font-semibold">✕ ไม่มีคาบเรียน (${r.step1SkipReason || 'ไม่ต้องผ่านครูรายวิชา'})</span>` : `<strong class="text-sky-700">${r.subjectName || '-'} (${r.subjectTeacherName || '-'})</strong>`}</p>
-          <p><span class="text-slate-400">ยานพาหนะ:</span> ${r.plateNo || '-'}</p>
+          <p><span class="text-slate-400">ยานพาหนะ:</span> <span class="font-medium">${r.plateNo || '-'}</span></p>
         </div>
         <!-- Right Approval History Timeline -->
         <div class="sm:col-span-6">
@@ -6183,25 +6183,25 @@ function renderStatusPage() {
       </div>
 
       <!-- Action Button -->
-      <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+      <div class="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
         ${r.status === 'exited' ? `
           <div class="space-y-2">
-            <button onclick="setViewMode('home'); setTimeout(() => { const el = document.getElementById('btn-student-return'); if (el) el.scrollIntoView({behavior: 'smooth'}); }, 200);" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 hover:scale-[1.01]">
-              <i class="fa-solid fa-person-walking-arrow-loop-left text-base"></i> 📍 ฉันกลับถึงวิทยาลัยแล้ว (กดบันทึกกลับ)
+            <button onclick="setViewMode('home'); setTimeout(() => { const el = document.getElementById('btn-student-return'); if (el) el.scrollIntoView({behavior: 'smooth'}); }, 200);" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 active:scale-98 text-base">
+              <i class="fa-solid fa-person-walking-arrow-loop-left text-lg"></i> 📍 ฉันกลับถึงวิทยาลัยแล้ว (กดบันทึกกลับ)
             </button>
-            <p class="text-[11px] text-center text-blue-600 font-medium">สแกนขาออกเรียบร้อยแล้ว ขาเข้าไม่ต้องสแกน QR ให้กดปุ่มนี้</p>
+            <p class="text-xs text-center text-blue-600 font-medium">สแกนขาออกเรียบร้อยแล้ว ขาเข้าไม่ต้องสแกน QR ให้กดปุ่มนี้</p>
           </div>
         ` : (isApproved ? `
-          <button onclick="setViewMode('qr')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 hover:scale-[1.01]">
-            <i class="fa-solid fa-qrcode text-base"></i> เปิดดู QR Pass สำหรับสแกนผ่านประตู (ขาออก)
+          <button onclick="setViewMode('qr')" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 active:scale-98 text-base">
+            <i class="fa-solid fa-qrcode text-lg"></i> เปิดดู QR Pass สำหรับสแกนผ่านประตู (ขาออก)
           </button>
         ` : `
-          <div class="w-full py-3 bg-slate-100 text-slate-600 font-medium rounded-2xl text-xs text-center flex items-center justify-center gap-2 border border-slate-200 px-3">
-            <i class="fa-solid fa-clock text-blue-500"></i> รอการอนุมัติครบทุกขั้น (${step}/${totalSteps}: รอ ${waitingTeacher}) จึงจะสร้าง QR Pass ได้
+          <div class="w-full py-3.5 bg-slate-100 text-slate-700 font-medium rounded-2xl text-xs sm:text-sm text-center flex items-center justify-center gap-2 border border-slate-200 px-3">
+            <i class="fa-solid fa-clock text-blue-500 text-base"></i> รอการอนุมัติครบทุกขั้น (${step}/${totalSteps}: รอ ${waitingTeacher}) จึงจะสร้าง QR Pass ได้
           </div>
         `)}
         ${canDelete ? `
-          <button onclick="deleteLeaveRequest(${r.id}, '${r.requestNo}')" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-600 border border-rose-200 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2">
+          <button onclick="deleteLeaveRequest(${r.id}, '${r.requestNo}')" class="w-full py-3 bg-rose-50 hover:bg-rose-100 active:scale-98 text-rose-600 border border-rose-200 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-trash-can"></i> ยกเลิก / ลบคำร้องนี้
           </button>
         ` : ''}

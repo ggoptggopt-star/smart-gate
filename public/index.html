@@ -43,10 +43,10 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Fonts: Sarabun (TH Sarabun Web & Local Fallback) -->
+  <!-- Google Fonts: Prompt & Sarabun for crystal clear modern Thai typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -145,17 +145,91 @@
       --nav-text-inactive: #64748b;
     }
 
+    /* ================= GLOBAL MOBILE & TYPOGRAPHY ENHANCEMENTS (Prompt Modern Font) ================= */
     body {
-      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-      font-size: 1.05rem;
+      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-size: 15px;
       line-height: 1.5;
       background-color: var(--bg-page);
       color: var(--text-main);
       transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+      touch-action: manipulation;
     }
     input, button, select, textarea, optgroup {
-      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     }
+
+    /* 1. Prevent iOS Safari auto-zoom on inputs & buttons (min 16px) */
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+      font-size: 16px !important;
+    }
+
+    /* 2. Upgrade microscopic text classes so every text is easily readable on mobile screens */
+    .text-\[7px\], .text-\[8px\], .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\] {
+      font-size: 12px !important;
+      line-height: 1.35 !important;
+    }
+    .text-\[10px\], .text-\[10\.5px\] {
+      font-size: 12.5px !important;
+      line-height: 1.4 !important;
+    }
+    .text-\[11px\] {
+      font-size: 13px !important;
+      line-height: 1.4 !important;
+    }
+    .text-xs {
+      font-size: 14px !important;
+      line-height: 1.45 !important;
+    }
+    .text-sm {
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+    }
+    .text-base {
+      font-size: 16px !important;
+      line-height: 1.5 !important;
+    }
+
+    /* 3. Mobile screen containment and smooth touch */
+    #main-container {
+      max-width: 480px !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: 0.875rem !important;
+      padding-right: 0.875rem !important;
+      box-sizing: border-box !important;
+      overflow-x: hidden !important;
+    }
+    @media (min-width: 768px) {
+      #main-container {
+        max-width: 680px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      #main-container {
+        max-width: 900px !important;
+      }
+    }
+
+    /* 4. Touch target optimization (ปุ่มกดง่าย ไม่หลุด ไม่เล็ก) */
+    button, [role="button"], a.btn {
+      touch-action: manipulation;
+    }
+
+    /* 5. Bottom Navigation Bar mobile-fit */
+    #mobile-bottom-nav {
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+    #mobile-bottom-nav button {
+      min-height: 50px !important;
+    }
+
     .onepass-header {
       background: linear-gradient(135deg, #0b56d0 0%, #0849b2 100%);
     }
@@ -414,41 +488,41 @@
         </div>
 
         <!-- แท็บสลับประเภทผู้ใช้งาน: นักเรียน VS บุคลากร/แอดมิน -->
-        <div class="grid grid-cols-2 p-1 bg-[#272d45] rounded-2xl border border-slate-700">
-          <button type="button" id="tab-auth-student" onclick="switchLoginRoleTab('student')" class="py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 bg-[#4f46e5] text-white shadow-md">
-            <i class="fa-solid fa-graduation-cap"></i>
+        <div class="grid grid-cols-2 p-1.5 bg-[#272d45] rounded-2xl border border-slate-700">
+          <button type="button" id="tab-auth-student" onclick="switchLoginRoleTab('student')" class="py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 bg-[#4f46e5] text-white shadow-md">
+            <i class="fa-solid fa-graduation-cap text-base"></i>
             <span>นักเรียน</span>
           </button>
-          <button type="button" id="tab-auth-staff" onclick="switchLoginRoleTab('staff')" class="py-2.5 rounded-xl font-medium text-xs text-slate-400 hover:text-white transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-chalkboard-user"></i>
+          <button type="button" id="tab-auth-staff" onclick="switchLoginRoleTab('staff')" class="py-3 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-chalkboard-user text-base"></i>
             <span>ครู / เจ้าหน้าที่</span>
           </button>
         </div>
 
         <!-- กล่องแจ้งเตือนความผิดพลาด (ข้อความเหมือนกันทุกกรณี ป้องกันการสุ่มรหัส) -->
-        <div id="student-login-error" class="hidden p-3 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2">
-          <i class="fa-solid fa-circle-exclamation text-rose-400 text-base shrink-0"></i>
-          <p id="student-login-error-msg" class="leading-tight">รหัสนักศึกษาไม่ถูกต้อง หรือไม่พบบัญชีในระบบ กรุณาติดต่อครูที่ปรึกษาหรือฝ่ายทะเบียน</p>
+        <div id="student-login-error" class="hidden p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-sm flex items-center gap-2.5">
+          <i class="fa-solid fa-circle-exclamation text-rose-400 text-lg shrink-0"></i>
+          <p id="student-login-error-msg" class="leading-snug">รหัสนักศึกษาไม่ถูกต้อง หรือไม่พบบัญชีในระบบ กรุณาติดต่อครูที่ปรึกษาหรือฝ่ายทะเบียน</p>
         </div>
 
         <!-- ================= 1. ฟอร์มนักเรียน: ช่องเดียว รหัสนักศึกษา ================= -->
         <div id="section-login-student" class="space-y-4">
-          <form id="form-student-login" onsubmit="handleStudentLogin(event)" class="space-y-3.5">
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+          <form id="form-student-login" onsubmit="handleStudentLogin(event)" class="space-y-4">
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between">
                 <span>รหัสนักศึกษา (11 หลัก)</span>
-                <span class="text-emerald-400 font-normal text-[10px]"><i class="fa-solid fa-link mr-1"></i> ผูกอุปกรณ์อัตโนมัติ</span>
+                <span class="text-emerald-400 font-medium text-xs"><i class="fa-solid fa-link mr-1"></i> ผูกเครื่องอัตโนมัติ</span>
               </label>
               <div class="relative">
                 <input type="text" id="login-student-code" required placeholder="เช่น 66209010012" maxlength="15" autocomplete="off"
-                       class="w-full bg-[#272d45] border border-slate-700/80 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition font-mono tracking-wide">
-                <i class="fa-solid fa-id-card absolute right-4 top-3.5 text-slate-500 text-sm"></i>
+                       class="w-full bg-[#272d45] border border-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3.5 text-base text-white placeholder-slate-400 outline-none transition font-mono tracking-wider">
+                <i class="fa-solid fa-id-card absolute right-4 top-4 text-slate-400 text-base"></i>
               </div>
-              <p class="text-[10px] text-slate-400 pt-0.5">ไม่ต้องใช้รหัสผ่าน เข้าครั้งแรกระบบจะผูกกับเครื่องนี้ทันที</p>
+              <p class="text-xs text-slate-400 pt-0.5">แตะเข้าใช้งานได้ทันที ไม่ต้องกรอกรหัสผ่าน</p>
             </div>
 
-            <button type="submit" id="btn-student-login" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl text-base shadow-lg shadow-indigo-950/50 transition hover:scale-[1.01] flex items-center justify-center gap-2 mt-2">
-              <i class="fa-solid fa-right-to-bracket"></i>
+            <button type="submit" id="btn-student-login" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold rounded-2xl text-base shadow-lg shadow-indigo-950/50 transition flex items-center justify-center gap-2 mt-2">
+              <i class="fa-solid fa-right-to-bracket text-lg"></i>
               <span>เข้าสู่ระบบ OnePass</span>
             </button>
           </form>
@@ -457,41 +531,41 @@
         <!-- ================= 2. ฟอร์มครู/บุคลากร/แอดมิน: Username + Password (Bcrypt) ================= -->
         <div id="section-login-staff" class="space-y-4 hidden">
           <!-- กล่องแจ้งเตือนเมื่อรหัสผ่านผิด -->
-          <div id="login-error-alert" class="hidden p-3 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2">
-            <i class="fa-solid fa-circle-exclamation text-rose-400 text-base shrink-0"></i>
+          <div id="login-error-alert" class="hidden p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-sm flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-exclamation text-rose-400 text-lg shrink-0"></i>
             <div>
               <p class="font-bold text-white">เข้าสู่ระบบไม่สำเร็จ</p>
-              <p class="text-[11px] text-rose-300">ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง</p>
+              <p class="text-xs text-rose-300">ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง</p>
             </div>
           </div>
 
-          <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-3.5">
+          <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
             <!-- USERNAME -->
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">ชื่อผู้ใช้งาน (USERNAME)</label>
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block">ชื่อผู้ใช้งาน (USERNAME)</label>
               <div class="relative">
                 <input type="text" id="login-username" placeholder="เช่น teacher_auto หรือ admin" autocomplete="username"
-                       class="w-full bg-[#272d45] border border-slate-700/80 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition">
-                <i class="fa-solid fa-user absolute right-4 top-3.5 text-slate-500 text-sm"></i>
+                       class="w-full bg-[#272d45] border border-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3.5 text-base text-white placeholder-slate-400 outline-none transition">
+                <i class="fa-solid fa-user absolute right-4 top-4 text-slate-400 text-base"></i>
               </div>
             </div>
 
             <!-- PASSWORD -->
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">รหัสผ่าน (PASSWORD)</label>
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block">รหัสผ่าน (PASSWORD)</label>
               <div class="relative">
                 <input type="password" id="login-password" placeholder="••••" autocomplete="current-password"
-                       class="w-full bg-[#272d45] border border-slate-700/80 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition">
-                <button type="button" onclick="togglePasswordVisibility('login-password', 'login-password-eye')" class="absolute right-4 top-3.5 text-slate-500 hover:text-slate-300 text-sm">
+                       class="w-full bg-[#272d45] border border-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40 rounded-2xl px-4 py-3.5 text-base text-white placeholder-slate-400 outline-none transition">
+                <button type="button" onclick="togglePasswordVisibility('login-password', 'login-password-eye')" class="absolute right-4 top-4 text-slate-400 hover:text-white text-base">
                   <i id="login-password-eye" class="fa-regular fa-eye"></i>
                 </button>
               </div>
             </div>
 
             <!-- SUBMIT BUTTON -->
-            <button type="submit" class="w-full py-3.5 bg-[#4f46e5] hover:bg-[#4338ca] active:bg-[#3730a3] text-white font-bold rounded-2xl text-base shadow-lg shadow-indigo-950/50 transition hover:scale-[1.01] flex items-center justify-center gap-2 mt-2">
+            <button type="submit" class="w-full py-4 bg-[#4f46e5] hover:bg-[#4338ca] active:scale-98 text-white font-bold rounded-2xl text-base shadow-lg shadow-indigo-950/50 transition flex items-center justify-center gap-2 mt-2">
               <span>เข้าสู่ระบบเจ้าหน้าที่</span>
-              <i class="fa-solid fa-arrow-right text-xs"></i>
+              <i class="fa-solid fa-arrow-right text-sm"></i>
             </button>
           </form>
         </div>
@@ -670,95 +744,89 @@
       </div>
 
       <div id="home-student-view" class="space-y-3.5 sm:space-y-5">
-        <!-- 1. กล่องเวลาเข้า-ออก (ประกาศสถานศึกษา) - ปรับแบบ 3 คอลัมน์ แนวนอน ประหยัดพื้นที่หน้าจอ -->
-        <div class="bg-white text-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-sm border border-slate-200 space-y-2 sm:space-y-2.5 relative overflow-hidden">
-          <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
-            <div class="flex items-center gap-2 min-w-0">
-              <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-xs sm:text-base shrink-0 shadow-xs">
+        <!-- 1. กล่องเวลาเข้า-ออก (ประกาศสถานศึกษา) - อ่านง่าย ตัวใหญ่ คมชัด -->
+        <div class="bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3 relative overflow-hidden">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-base shrink-0 shadow-xs">
                 <i class="fa-solid fa-bullhorn"></i>
               </div>
               <div class="min-w-0">
-                <h3 class="font-bold text-slate-800 text-xs sm:text-sm leading-tight truncate">เวลาเข้า - ออก</h3>
-                <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">ระเบียบฝ่ายพัฒนากิจการฯ</p>
+                <h3 class="font-bold text-slate-800 text-base leading-tight truncate">เวลาเข้า - ออก</h3>
+                <p class="text-xs text-slate-400 truncate">ระเบียบฝ่ายพัฒนากิจการฯ</p>
               </div>
             </div>
-            <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end shrink-0">
+            <div class="flex items-center gap-1.5 flex-wrap justify-end shrink-0">
               <!-- Gate Hardware Status Badge (มุมมองนักเรียน) -->
-              <div id="header-gate-badge" class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-xs font-semibold shadow-2xs" title="สถานะการเชื่อมต่อบอร์ด ESP32 ควบคุมไม้กั้น">
-                <span id="header-gate-dot" class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                <span id="header-gate-text" class="text-rose-700 text-[9px] sm:text-[10.5px] font-bold">ไม้กั้นออฟไลน์</span>
+              <div id="header-gate-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-xs font-semibold shadow-2xs" title="สถานะการเชื่อมต่อบอร์ด ESP32 ควบคุมไม้กั้น">
+                <span id="header-gate-dot" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span id="header-gate-text" class="text-rose-700 text-xs font-bold">ไม้กั้นออฟไลน์</span>
               </div>
-              <span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[8.5px] sm:text-[10px] font-bold">
-                <i class="fa-solid fa-bell mr-0.5 text-blue-500"></i> ระเบียบ
-              </span>
             </div>
           </div>
 
-          <!-- ตารางเวลาแบบ 3 คอลัมน์ แนวนอน (Compact 3-Column Mini Cards) -->
-          <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 text-center">
+          <!-- ตารางเวลาแบบ 3 คอลัมน์ แนวนอน: ตัวเลขใหญ่ อ่านชัดเจน -->
+          <div class="grid grid-cols-3 gap-2 text-center">
             <!-- เข้าสถานศึกษา -->
-            <div class="bg-amber-50/70 border border-amber-200/70 rounded-xl p-1.5 sm:p-2 flex flex-col justify-center items-center">
-              <div class="flex items-center gap-1 text-[9.5px] sm:text-xs text-amber-800 font-semibold">
-                <i class="fa-regular fa-sun text-amber-500 text-xs sm:text-sm"></i>
-                <span class="truncate">เข้าสถานศึกษา</span>
+            <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-2.5 flex flex-col justify-center items-center">
+              <div class="flex items-center gap-1 text-xs text-amber-800 font-bold">
+                <i class="fa-regular fa-sun text-amber-500 text-sm"></i>
+                <span class="truncate">เข้าวิทยาลัย</span>
               </div>
-              <div id="home-student-entry-time" class="text-[10.5px] sm:text-xs font-bold text-slate-800 mt-0.5">
+              <div id="home-student-entry-time" class="text-sm sm:text-base font-extrabold text-slate-800 mt-1">
                 ก่อน 08:00
               </div>
             </div>
 
             <!-- พักกลางวัน -->
-            <div class="bg-emerald-50/70 border border-emerald-200/70 rounded-xl p-1.5 sm:p-2 flex flex-col justify-center items-center">
-              <div class="flex items-center gap-1 text-[9.5px] sm:text-xs text-emerald-800 font-semibold">
-                <i class="fa-solid fa-utensils text-emerald-500 text-xs sm:text-sm"></i>
+            <div class="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-2.5 flex flex-col justify-center items-center">
+              <div class="flex items-center gap-1 text-xs text-emerald-800 font-bold">
+                <i class="fa-solid fa-utensils text-emerald-500 text-sm"></i>
                 <span class="truncate">พักกลางวัน</span>
               </div>
-              <div id="home-student-lunch-time" class="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 whitespace-nowrap">
+              <div id="home-student-lunch-time" class="text-xs sm:text-sm font-extrabold text-slate-800 mt-1 whitespace-nowrap">
                 12:00-13:00
               </div>
             </div>
 
             <!-- เลิกเรียน -->
-            <div class="bg-blue-50/70 border border-blue-200/70 rounded-xl p-1.5 sm:p-2 flex flex-col justify-center items-center">
-              <div class="flex items-center gap-1 text-[9.5px] sm:text-xs text-blue-800 font-semibold">
-                <i class="fa-solid fa-door-open text-blue-500 text-xs sm:text-sm"></i>
+            <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-2.5 flex flex-col justify-center items-center">
+              <div class="flex items-center gap-1 text-xs text-blue-800 font-bold">
+                <i class="fa-solid fa-door-open text-blue-500 text-sm"></i>
                 <span class="truncate">เลิกเรียน</span>
               </div>
-              <div id="home-student-dismissal-time" class="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 whitespace-nowrap">
+              <div id="home-student-dismissal-time" class="text-xs sm:text-sm font-extrabold text-slate-800 mt-1 whitespace-nowrap">
                 ตั้งแต่ 16:00
               </div>
             </div>
           </div>
 
-          <p class="text-[9px] sm:text-[10.5px] text-slate-500 font-medium flex items-center gap-1.5 bg-slate-50/80 px-2 py-0.5 rounded-lg border border-slate-100">
-            <i class="fa-solid fa-circle-info text-blue-500 shrink-0 text-[10px] sm:text-xs"></i>
-            <span class="truncate">นอกเวลาดังกล่าว ต้องมีใบคำร้อง OnePass ที่ได้รับอนุมัติ</span>
+          <p class="text-xs text-slate-500 font-medium flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+            <i class="fa-solid fa-circle-info text-blue-500 shrink-0 text-sm"></i>
+            <span>นอกเวลาดังกล่าว ต้องมีใบคำร้อง OnePass ที่ได้รับอนุมัติ</span>
           </p>
         </div>
 
         <!-- 2. กล่องสถานะคำขอปัจจุบัน (ไดนามิก) -->
-        <div id="home-current-status-box" class="bg-white text-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-sm border border-slate-200 space-y-2.5">
+        <div id="home-current-status-box" class="bg-white text-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
           <!-- Rendered via JS -->
         </div>
 
-        <!-- 3. ส่วน: การจัดการเข้า-ออก (2 ปุ่ม) -->
-        <div class="space-y-3 pt-1">
-          <h4 class="font-bold text-slate-800 text-base flex items-center gap-2">
-            <i class="fa-solid fa-arrow-right-arrow-left text-blue-600"></i> การจัดการเข้า-ออก
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <button onclick="setViewMode('status')" class="py-4 px-5 bg-white hover:bg-slate-50 text-slate-700 hover:text-blue-700 font-bold rounded-2xl text-sm sm:text-base shadow-sm border border-slate-200 hover:border-blue-300 transition flex items-center justify-center gap-3 group">
-              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition">
-                <i class="fa-solid fa-clipboard-check"></i>
-              </div>
-              <span data-i18n="btn_current_status">สถานะปัจจุบัน</span>
-            </button>
-
-            <button onclick="tryOpenLeaveForm()" class="py-4 px-5 bg-[#0d55cf] hover:bg-blue-700 text-white font-bold rounded-2xl text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center justify-center gap-3 hover:scale-[1.01]">
-              <div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center text-base">
+        <!-- 3. ส่วน: การจัดการเข้า-ออก (ปุ่มใหญ่ กดง่าย ชัดเจน) -->
+        <div class="space-y-2.5 pt-1">
+          <div class="flex flex-col gap-2.5">
+            <button onclick="tryOpenLeaveForm()" class="w-full py-4 px-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold rounded-2xl text-base shadow-md hover:shadow-lg transition flex items-center justify-center gap-3 active:scale-98">
+              <div class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center text-lg">
                 <i class="fa-solid fa-file-pen"></i>
               </div>
-              <span data-i18n="btn_new_request">ยื่นคำร้อง</span>
+              <span data-i18n="btn_new_request" class="text-base tracking-wide">ยื่นคำร้องขออนุญาต</span>
+            </button>
+
+            <button onclick="setViewMode('status')" class="w-full py-3.5 px-5 bg-white hover:bg-slate-50 text-slate-700 hover:text-blue-700 font-bold rounded-2xl text-sm sm:text-base shadow-sm border border-slate-200 hover:border-blue-300 transition flex items-center justify-center gap-3 active:scale-98">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <span data-i18n="btn_current_status">ติดตามสถานะคำร้อง</span>
             </button>
           </div>
         </div>
@@ -1010,41 +1078,41 @@
       </div>
 
       <!-- Section 1: ข้อมูลผู้ยื่นคำร้อง -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-3.5 text-sm">
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-3.5">
         <div class="font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100 text-base">
           <i class="fa-solid fa-user text-blue-600"></i> ข้อมูลผู้ยื่นคำร้อง
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label class="block text-slate-500 text-xs mb-1 font-medium">ชื่อ-นามสกุล :</label>
-            <input type="text" id="form-name" value="นายธนภัทร รัตนโชติ" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-700 cursor-not-allowed select-none focus:outline-none">
+            <label class="block text-slate-600 text-sm mb-1.5 font-bold">ชื่อ-นามสกุล :</label>
+            <input type="text" id="form-name" value="นายธนภัทร รัตนโชติ" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-base font-semibold text-slate-800 cursor-not-allowed select-none focus:outline-none">
           </div>
           <div>
-            <label class="block text-slate-500 text-xs mb-1 font-medium">รหัสนักศึกษา :</label>
-            <input type="text" id="form-code" value="66209010012" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-700 cursor-not-allowed select-none focus:outline-none">
+            <label class="block text-slate-600 text-sm mb-1.5 font-bold">รหัสนักศึกษา :</label>
+            <input type="text" id="form-code" value="66209010012" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-base font-semibold text-slate-800 cursor-not-allowed select-none focus:outline-none font-mono">
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label class="block text-slate-500 text-xs mb-1 font-medium">แผนกวิชา :</label>
-            <input type="text" id="form-dept" value="แผนกวิชาช่างยนต์" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-700 cursor-not-allowed select-none focus:outline-none">
+            <label class="block text-slate-600 text-sm mb-1.5 font-bold">แผนกวิชา :</label>
+            <input type="text" id="form-dept" value="แผนกวิชาช่างยนต์" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-base font-semibold text-slate-800 cursor-not-allowed select-none focus:outline-none">
           </div>
           <div>
-            <label class="block text-slate-500 text-xs mb-1 font-medium">ระดับชั้นปี :</label>
-            <input type="text" id="form-classroom" value="ปวช.3" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-bold text-blue-700 cursor-not-allowed select-none focus:outline-none">
+            <label class="block text-slate-600 text-sm mb-1.5 font-bold">ระดับชั้นปี :</label>
+            <input type="text" id="form-classroom" value="ปวช.3" readonly class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-base font-bold text-blue-700 cursor-not-allowed select-none focus:outline-none">
           </div>
         </div>
       </div>
 
       <!-- Section 2: รายละเอียดการขออนุญาต -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-3.5 text-sm">
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-4">
         <div class="font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100 text-base">
           <i class="fa-solid fa-calendar-days text-blue-600"></i> รายละเอียดการขออนุญาต
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label class="block text-slate-500 text-xs mb-1 font-medium">ประเภทการลา <span class="text-rose-500">*</span></label>
-            <select id="form-type" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <label class="block text-slate-700 text-sm mb-1.5 font-bold">ประเภทการลา <span class="text-rose-500">*</span></label>
+            <select id="form-type" class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">
               <option value="personal" selected>ลากิจธุระจำเป็น</option>
               <option value="medical">พบแพทย์ / ตรวจสุขภาพ</option>
               <option value="official">ภารกิจวิทยาลัย / แข่งขันทักษะ</option>
@@ -1054,50 +1122,50 @@
           <!-- วันที่ขออนุญาตออก (วันนี้ / พรุ่งนี้ / ล่วงหน้า) -->
           <div class="space-y-1.5 pt-1">
             <div class="flex items-center justify-between">
-              <label class="block text-slate-500 text-xs font-medium">
+              <label class="block text-slate-700 text-sm font-bold">
                 วันที่ขออนุญาตออก <span class="text-rose-500">*</span>
               </label>
-              <span id="display-leave-date-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+              <span id="display-leave-date-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                 วันนี้
               </span>
             </div>
 
             <!-- Quick Preset Chips -->
             <div class="grid grid-cols-3 gap-2">
-              <button type="button" id="btn-date-today" onclick="selectLeaveDatePreset('today')" class="py-2.5 px-2 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition">
+              <button type="button" id="btn-date-today" onclick="selectLeaveDatePreset('today')" class="py-3 px-2 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold text-sm flex items-center justify-center gap-1.5 shadow-2xs transition active:scale-95">
                 <span class="w-2 h-2 rounded-full bg-blue-600"></span>
                 <span>วันนี้</span>
               </button>
-              <button type="button" id="btn-date-tomorrow" onclick="selectLeaveDatePreset('tomorrow')" class="py-2.5 px-2 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 transition">
+              <button type="button" id="btn-date-tomorrow" onclick="selectLeaveDatePreset('tomorrow')" class="py-3 px-2 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center gap-1.5 transition active:scale-95">
                 <i class="fa-regular fa-calendar-plus text-slate-400 text-xs"></i>
                 <span>พรุ่งนี้</span>
               </button>
-              <button type="button" id="btn-date-custom" onclick="selectLeaveDatePreset('custom')" class="py-2.5 px-2 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 transition">
+              <button type="button" id="btn-date-custom" onclick="selectLeaveDatePreset('custom')" class="py-3 px-2 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center gap-1.5 transition active:scale-95">
                 <i class="fa-regular fa-calendar-days text-slate-400 text-xs"></i>
                 <span>เลือกวันอื่น</span>
               </button>
             </div>
 
             <!-- Custom Date Picker Input (Shows when selecting custom) -->
-            <div id="wrapper-custom-date" class="hidden mt-2 p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 transition">
+            <div id="wrapper-custom-date" class="hidden mt-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 transition">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-700">ระบุวันที่ต้องการขอล่วงหน้า:</span>
-                <span class="text-[10px] text-slate-400">ขอล่วงหน้าได้ไม่เกิน 14 วัน</span>
+                <span class="text-slate-400">ขอล่วงหน้าได้ไม่เกิน 14 วัน</span>
               </div>
-              <input type="date" id="form-custom-date-input" onchange="onCustomDateChange(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 font-medium text-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <input type="date" id="form-custom-date-input" onchange="onCustomDateChange(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
 
             <!-- Formatted Date Display Bar -->
-            <div class="p-2.5 rounded-xl bg-slate-100/80 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
-              <span class="flex items-center gap-1.5 font-medium">
-                <i class="fa-regular fa-calendar-check text-blue-600"></i> วันที่เดินทาง:
+            <div class="p-3 rounded-2xl bg-slate-100/90 border border-slate-200 flex items-center justify-between text-xs sm:text-sm text-slate-600">
+              <span class="flex items-center gap-2 font-medium">
+                <i class="fa-regular fa-calendar-check text-blue-600 text-base"></i> วันที่เดินทาง:
               </span>
-              <span id="display-formatted-leave-date" class="font-bold text-slate-800 font-mono">กำลังโหลด...</span>
+              <span id="display-formatted-leave-date" class="font-bold text-slate-800 font-mono text-sm">กำลังโหลด...</span>
             </div>
 
             <!-- Notice for Advance Request -->
-            <div id="notice-advance-leave" class="hidden p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-[11px] flex items-start gap-1.5">
-              <i class="fa-solid fa-circle-info text-blue-600 mt-0.5 shrink-0"></i>
+            <div id="notice-advance-leave" class="hidden p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-start gap-2">
+              <i class="fa-solid fa-circle-info text-blue-600 mt-0.5 shrink-0 text-sm"></i>
               <span>คำร้องขอล่วงหน้า: เมื่อครูอนุมัติแล้ว QR Code จะเปิดให้ใช้งานในวันที่ขออนุญาตเท่านั้น</span>
             </div>
 
@@ -1105,38 +1173,38 @@
           </div>
 
           <div>
-            <label class="block text-slate-500 text-xs mb-1.5 font-medium">ช่วงเวลาที่ออก <span class="text-rose-500">*</span></label>
+            <label class="block text-slate-700 text-sm mb-1.5 font-bold">ช่วงเวลาที่ออก <span class="text-rose-500">*</span></label>
             <div class="grid grid-cols-2 gap-2.5">
               <!-- ปุ่มเลือกเวลาออก -->
               <div class="space-y-1">
-                <span class="text-[11px] font-bold text-slate-500">เวลาออก:</span>
-                <button id="btn-dep-time" type="button" onclick="openThaiTimePicker('dep')" class="w-full bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-400 rounded-2xl px-3.5 py-3 text-left transition flex items-center justify-between group shadow-2xs">
-                  <span id="display-dep-time" class="text-base font-bold text-slate-400">00:00 น.</span>
-                  <i class="fa-regular fa-clock text-blue-500 text-base group-hover:scale-110 transition shrink-0"></i>
+                <span class="text-xs font-bold text-slate-500">เวลาออก:</span>
+                <button id="btn-dep-time" type="button" onclick="openThaiTimePicker('dep')" class="w-full bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-400 rounded-2xl px-4 py-3 text-left transition flex items-center justify-between group shadow-2xs active:scale-95">
+                  <span id="display-dep-time" class="text-lg font-extrabold text-slate-800">00:00 น.</span>
+                  <i class="fa-regular fa-clock text-blue-600 text-lg group-hover:scale-110 transition shrink-0"></i>
                 </button>
                 <input type="hidden" id="form-dep-time" value="00:00">
               </div>
 
               <!-- ปุ่มเลือกเวลากลับ -->
               <div id="wrapper-ret-time" class="space-y-1 transition-all duration-200">
-                <span class="text-[11px] font-bold text-slate-500">เวลากลับ:</span>
-                <button id="btn-ret-time" type="button" onclick="openThaiTimePicker('ret')" class="w-full bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-400 rounded-2xl px-3.5 py-3 text-left transition flex items-center justify-between group shadow-2xs">
-                  <span id="display-ret-time" class="text-base font-bold text-slate-400">00:00 น.</span>
-                  <i id="icon-ret-time" class="fa-regular fa-clock text-blue-500 text-base group-hover:scale-110 transition shrink-0"></i>
+                <span class="text-xs font-bold text-slate-500">เวลากลับ:</span>
+                <button id="btn-ret-time" type="button" onclick="openThaiTimePicker('ret')" class="w-full bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-400 rounded-2xl px-4 py-3 text-left transition flex items-center justify-between group shadow-2xs active:scale-95">
+                  <span id="display-ret-time" class="text-lg font-extrabold text-slate-800">00:00 น.</span>
+                  <i id="icon-ret-time" class="fa-regular fa-clock text-blue-600 text-lg group-hover:scale-110 transition shrink-0"></i>
                 </button>
                 <input type="hidden" id="form-ret-time" value="00:00">
               </div>
             </div>
 
             <!-- สวิตช์ / Checkbox: ไม่กลับเข้าวิทยาลัยในวันนี้ (ลากลับบ้าน) -->
-            <div id="box-no-return" class="mt-3 p-3 rounded-2xl bg-amber-50/80 border border-amber-200/90 flex items-center justify-between gap-3 transition">
-              <label for="form-no-return" class="flex items-center gap-2.5 cursor-pointer select-none flex-1">
+            <div id="box-no-return" class="mt-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3 transition">
+              <label for="form-no-return" class="flex items-center gap-3 cursor-pointer select-none flex-1">
                 <input type="checkbox" id="form-no-return" onchange="toggleNoReturn(this.checked)" class="w-5 h-5 rounded-lg text-amber-600 focus:ring-amber-500 border-amber-300">
                 <div class="leading-tight">
-                  <span class="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                    <i class="fa-solid fa-house-chimney-user text-amber-600 text-sm"></i> ไม่กลับเข้าวิทยาลัยในวันนี้ (ลากลับ)
+                  <span class="text-sm font-bold text-amber-950 flex items-center gap-2">
+                    <i class="fa-solid fa-house-chimney-user text-amber-600 text-base"></i> ไม่กลับเข้าวิทยาลัยในวันนี้ (ลากลับ)
                   </span>
-                  <span class="text-[10px] text-amber-800 mt-0.5 block">สแกนออกได้ครั้งเดียวแล้วเสร็จสิ้นทันที ไม่ต้องรอสแกนกลับเข้า</span>
+                  <span class="text-xs text-amber-800 mt-0.5 block">สแกนออกได้ครั้งเดียวแล้วเสร็จสิ้นทันที ไม่ต้องรอสแกนกลับเข้า</span>
                 </div>
               </label>
             </div>
@@ -1212,52 +1280,54 @@
             </div>
           </div>
         </div>
-        <!-- รูปแบบการเดินทาง: รถส่วนตัว vs มีผู้มารับ -->
+        <!-- รูปแบบการเดินทาง: รถส่วนตัว vs มีผู้มารับ (ปุ่มใหญ่ กดง่าย) -->
         <div class="space-y-2">
-          <label class="block text-slate-500 text-xs font-medium">รูปแบบการเดินทาง <span class="text-rose-500">*</span></label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="btn-travel-own" onclick="selectTravelMode('own')" class="py-2.5 px-3 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition">
-              <i class="fa-solid fa-motorcycle text-blue-600"></i>
-              <span>ขับขี่ยานพาหนะส่วนตัว</span>
+          <label class="block text-slate-700 text-sm font-bold">รูปแบบการเดินทาง <span class="text-rose-500">*</span></label>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" id="btn-travel-own" onclick="selectTravelMode('own')" class="py-3 px-3 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold text-sm flex items-center justify-center gap-2 shadow-2xs transition active:scale-95">
+              <i class="fa-solid fa-motorcycle text-blue-600 text-base"></i>
+              <span>รถส่วนตัว</span>
             </button>
-            <button type="button" id="btn-travel-pickup" onclick="selectTravelMode('pickup')" class="py-2.5 px-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 transition">
-              <i class="fa-solid fa-car-side text-slate-500"></i>
-              <span>มีผู้ปกครอง / คนมารับ</span>
+            <button type="button" id="btn-travel-pickup" onclick="selectTravelMode('pickup')" class="py-3 px-3 rounded-2xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center gap-2 transition active:scale-95">
+              <i class="fa-solid fa-car-side text-slate-500 text-base"></i>
+              <span>มีคนมารับ</span>
             </button>
           </div>
           <input type="hidden" id="form-travel-mode" value="own">
 
           <!-- 1. กรณีขับรถเอง: ทะเบียนรถส่วนตัว -->
-          <div id="wrapper-travel-own" class="space-y-1">
-            <label class="block text-slate-500 text-xs font-medium">ทะเบียนรถส่วนตัว <span class="text-slate-400 font-normal text-[10px]">(ถ้ามีรถ)</span></label>
-            <input type="text" id="form-plate" value="" placeholder="เช่น 1กข 1234 นครนายก" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <div id="wrapper-travel-own" class="space-y-1.5 pt-1">
+            <label class="block text-slate-700 text-sm font-bold">ทะเบียนรถส่วนตัว <span class="text-slate-400 font-normal text-xs">(ถ้ามี)</span></label>
+            <input type="text" id="form-plate" value="" placeholder="เช่น 1กข 1234 นครนายก" class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">
           </div>
 
           <!-- 2. กรณีมีคนมารับ: ชื่อผู้มารับ + ทะเบียนรถที่มารับ -->
-          <div id="wrapper-travel-pickup" class="hidden p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2.5 transition">
-            <div class="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+          <div id="wrapper-travel-pickup" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-3 transition">
+            <div class="flex items-center gap-2 text-sm font-bold text-amber-950">
               <i class="fa-solid fa-user-shield text-amber-600"></i>
-              <span>ข้อมูลบุคคลที่มารับ (ระบุชื่อเพื่อความปลอดภัย)</span>
+              <span>ข้อมูลบุคคลที่มารับ (เพื่อความปลอดภัย)</span>
             </div>
             <div>
-              <label class="block text-slate-600 text-[11px] font-bold mb-1">ชื่อ-นามสกุล ผู้มารับ <span class="text-rose-500">*</span></label>
-              <input type="text" id="form-pickup-name" placeholder="เช่น นางสมใจ ใจดี (มารดา) หรือ นายวิชัย (บิดา)" class="w-full bg-white border border-amber-300 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+              <label class="block text-slate-700 text-xs font-bold mb-1">ชื่อ-นามสกุล ผู้มารับ <span class="text-rose-500">*</span></label>
+              <input type="text" id="form-pickup-name" placeholder="เช่น นางสมใจ ใจดี (มารดา) หรือ นายวิชัย (บิดา)" class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-base font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
             </div>
             <div>
-              <label class="block text-slate-600 text-[11px] font-medium mb-1">ทะเบียนรถของผู้มารับ (ถ้ามี)</label>
-              <input type="text" id="form-pickup-plate" placeholder="เช่น 2ขค 8899 กทม. (รถยนต์)" class="w-full bg-white border border-amber-300 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+              <label class="block text-slate-700 text-xs font-medium mb-1">ทะเบียนรถของผู้มารับ (ถ้ามี)</label>
+              <input type="text" id="form-pickup-plate" placeholder="เช่น 2ขค 8899 กทม. (รถยนต์)" class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-base font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
             </div>
           </div>
         </div>
+
         <div>
-          <label id="label-parent-phone" class="block text-slate-500 text-xs mb-1 font-medium">เบอร์โทรผู้ปกครอง <span id="star-parent-phone" class="text-rose-500 hidden">* (จำเป็นสำหรับการลากลับ)</span></label>
-          <input type="tel" id="form-parent-phone" placeholder="เช่น 089-876-5432" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+          <label id="label-parent-phone" class="block text-slate-700 text-sm mb-1.5 font-bold">เบอร์โทรผู้ปกครอง <span id="star-parent-phone" class="text-rose-500 hidden">* (จำเป็นสำหรับการลากลับ)</span></label>
+          <input type="tel" id="form-parent-phone" placeholder="เช่น 089-876-5432" class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
         </div>
+
         <!-- สถานที่ / ปลายทางที่ต้องไป -->
         <div>
-          <label class="block text-slate-500 text-xs mb-1 font-medium">สถานที่ / ปลายทางที่ต้องไป <span class="text-rose-500">*</span></label>
+          <label class="block text-slate-700 text-sm mb-1.5 font-bold">สถานที่ / ปลายทางที่ต้องไป <span class="text-rose-500">*</span></label>
           <div class="relative">
-            <select id="form-destination" onchange="onDestinationChange(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none pr-9 text-xs sm:text-sm">
+            <select id="form-destination" onchange="onDestinationChange(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none pr-10">
               <option value="ธนาคาร / สถาบันการเงิน" selected>🏦 ธนาคาร / สถาบันการเงิน (เปิดบัญชี, กยศ.)</option>
               <option value="โรงพยาบาล / คลินิก / สถานีอนามัย">🏥 โรงพยาบาล / คลินิก (พบแพทย์ตามนัด, ตรวจสุขภาพ)</option>
               <option value="สถานประกอบการ / ที่ฝึกงาน">🏢 สถานประกอบการ / ที่ฝึกงาน (ติดต่อฝึกงาน)</option>
@@ -1265,53 +1335,49 @@
               <option value="บ้าน / ที่พักอาศัย">🏠 บ้าน / ที่พักอาศัย (ธุระครอบครัว, ลากลับบ้าน)</option>
               <option value="other">✏️ สถานที่อื่นๆ (โปรดระบุ)</option>
             </select>
-            <i class="fa-solid fa-chevron-down absolute right-3.5 top-3.5 text-slate-400 text-xs pointer-events-none"></i>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 text-sm pointer-events-none"></i>
           </div>
           <div id="wrapper-destination-other" class="hidden mt-2">
-            <input type="text" id="form-destination-other" placeholder="โปรดระบุสถานที่ปลายทางที่ต้องการไป..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 font-medium text-slate-800 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <input type="text" id="form-destination-other" placeholder="โปรดระบุสถานที่ปลายทางที่ต้องการไป..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">
           </div>
         </div>
+
         <div>
-          <label class="block text-slate-500 text-xs mb-1 font-medium">เหตุผลการขออนุญาต <span class="text-rose-500">*</span></label>
-          <textarea id="form-reason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">ไปติดต่อทำธุรกรรมที่ธนาคารและรับเอกสารสำคัญกับผู้ปกครอง</textarea>
+          <label class="block text-slate-700 text-sm mb-1.5 font-bold">เหตุผลการขออนุญาต <span class="text-rose-500">*</span></label>
+          <textarea id="form-reason" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 font-semibold text-slate-800 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">ไปติดต่อทำธุรกรรมที่ธนาคารและรับเอกสารสำคัญกับผู้ปกครอง</textarea>
         </div>
       </div>
 
       <!-- Section 3: แนบเอกสารหลักฐาน -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-2.5 text-sm">
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-3 text-sm">
         <div class="font-bold text-slate-800 flex items-center justify-between pb-2 border-b border-slate-100 text-base">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-paperclip text-blue-600"></i> แนบเอกสารหลักฐาน (ถ้ามี)
           </div>
-          <span class="text-[11px] font-normal text-slate-400">รูปภาพไม่บังคับ</span>
+          <span class="text-xs font-normal text-slate-400">ไม่บังคับ</span>
         </div>
         
-        <!-- 1. สถานะยังไม่ได้แนบไฟล์: ใช้ <label for="form-evidence-file"> เพื่อให้มือถือเปิดกล้อง/คลังภาพได้ 100% -->
+        <!-- 1. สถานะยังไม่ได้แนบไฟล์ -->
         <input type="file" id="form-evidence-file" accept="image/png,image/jpeg,image/webp,image/jpg" class="sr-only" onchange="handleEvidenceUpload(event)">
         
         <label for="form-evidence-file" id="evidence-upload-zone" class="block border-2 border-dashed border-blue-200 hover:border-blue-400 active:bg-blue-100 bg-blue-50/50 hover:bg-blue-50/80 rounded-2xl p-5 text-center cursor-pointer transition select-none group">
           <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-2 text-xl group-hover:scale-110 transition shadow-2xs">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <p class="font-bold text-blue-700 text-sm">อัปโหลดไฟล์ หรือถ่ายภาพหลักฐาน</p>
-          <p class="text-xs text-slate-400 mt-0.5">เช่น รูปแชทไลน์ผู้ปกครองยินยอม, ใบนัดแพทย์ (JPG, PNG)</p>
-          <span class="inline-flex items-center gap-1.5 mt-2.5 px-3.5 py-1.5 bg-blue-600 text-white font-bold text-xs rounded-xl shadow-xs group-hover:bg-blue-700 transition pointer-events-none">
-            <i class="fa-solid fa-camera"></i>
-            <span>ถ่ายภาพ หรือเลือกรูป</span>
-          </span>
+          <p class="font-bold text-blue-700 text-base">แตะเพื่อถ่ายภาพ หรือเลือกรูปหลักฐาน</p>
+          <p class="text-xs text-slate-400 mt-1">เช่น ภาพแชทไลน์ผู้ปกครองอนุญาต, ใบนัดแพทย์ (JPG, PNG)</p>
         </label>
 
         <!-- 2. สถานะแนบไฟล์แล้ว: การ์ดแสดงรูปย่อ + ชื่อไฟล์ + ขนาด + ปุ่มดู/ลบ -->
-        <div id="evidence-preview-card" class="hidden bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl p-3.5 sm:p-4 transition space-y-3">
+        <div id="evidence-preview-card" class="hidden bg-emerald-50/80 border-2 border-emerald-300 rounded-2xl p-4 transition space-y-3">
           <div class="flex items-center justify-between">
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
               <i class="fa-solid fa-circle-check text-emerald-600"></i> แนบหลักฐานเรียบร้อยแล้ว
             </span>
-            <span class="text-[11px] text-emerald-700 font-medium">รูปภาพพร้อมส่ง</span>
+            <span class="text-xs text-emerald-700 font-medium">รูปภาพพร้อมส่ง</span>
           </div>
 
-          <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-emerald-200 shadow-2xs">
-            <!-- รูปย่อ (Thumbnail) กดขยายดูได้ -->
+          <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-emerald-200 shadow-2xs">
             <div class="relative group cursor-pointer shrink-0" onclick="openEvidenceModal(window.uploadedEvidencePhoto)" title="กดเพื่อดูภาพขนาดเต็ม">
               <img id="evidence-preview-img" src="" alt="ภาพหลักฐาน" class="w-16 h-16 rounded-lg object-cover border border-slate-200 bg-slate-50 shadow-2xs group-hover:opacity-90 transition">
               <div class="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs font-bold">
@@ -1319,32 +1385,30 @@
               </div>
             </div>
 
-            <!-- รายละเอียดไฟล์: ชื่อไฟล์ + ขนาดไฟล์ -->
             <div class="flex-1 min-w-0 space-y-0.5">
-              <p id="evidence-filename" class="font-bold text-slate-800 text-xs sm:text-sm truncate">evidence_image.jpg</p>
-              <p id="evidence-filesize" class="text-[11px] text-slate-500 font-mono">ขนาด: -</p>
+              <p id="evidence-filename" class="font-bold text-slate-800 text-sm truncate">evidence_image.jpg</p>
+              <p id="evidence-filesize" class="text-xs text-slate-500 font-mono">ขนาด: -</p>
               <div class="flex items-center gap-2 pt-1">
-                <button type="button" onclick="openEvidenceModal(window.uploadedEvidencePhoto)" class="text-[11px] text-blue-600 hover:text-blue-800 font-bold inline-flex items-center gap-1">
-                  <i class="fa-solid fa-expand text-[10px]"></i> ดูรูปเต็ม
+                <button type="button" onclick="openEvidenceModal(window.uploadedEvidencePhoto)" class="text-xs text-blue-600 hover:text-blue-800 font-bold inline-flex items-center gap-1">
+                  <i class="fa-solid fa-expand"></i> ดูรูปเต็ม
                 </button>
                 <span class="text-slate-300">•</span>
-                <label for="form-evidence-file" class="cursor-pointer text-[11px] text-slate-600 hover:text-slate-800 font-medium inline-flex items-center gap-1">
-                  <i class="fa-solid fa-arrows-rotate text-[10px]"></i> เปลี่ยนรูป
+                <label for="form-evidence-file" class="cursor-pointer text-xs text-slate-600 hover:text-slate-800 font-medium inline-flex items-center gap-1">
+                  <i class="fa-solid fa-arrows-rotate"></i> เปลี่ยนรูป
                 </label>
               </div>
             </div>
 
-            <!-- ปุ่มลบไฟล์สีแดง -->
-            <button type="button" onclick="removeEvidenceUpload()" title="ลบไฟล์นี้ออก" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 flex items-center justify-center text-sm font-bold transition shrink-0 shadow-2xs hover:scale-105">
+            <button type="button" onclick="removeEvidenceUpload()" title="ลบไฟล์นี้ออก" class="w-10 h-10 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 flex items-center justify-center text-base font-bold transition shrink-0 shadow-2xs hover:scale-105 active:scale-95">
               <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Submit Button (With Loading State & Double-Click Prevention) -->
-      <button type="button" id="btn-submit-form" onclick="submitOnePassForm()" class="w-full py-4 bg-[#0d55cf] hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none text-white rounded-2xl font-bold text-base shadow-md transition flex items-center justify-center gap-2 hover:shadow-lg">
-        <i class="fa-solid fa-paper-plane"></i> <span>ส่งคำร้องขออนุญาต</span>
+      <!-- Submit Button (Large & Thumb-friendly) -->
+      <button type="button" id="btn-submit-form" onclick="submitOnePassForm()" class="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-900/20 transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-paper-plane text-lg"></i> <span>ส่งคำร้องขออนุญาต</span>
       </button>
     </div>
 
@@ -3398,49 +3462,49 @@
   </footer>
 
   <!-- ================= 4. MOBILE BOTTOM NAVIGATION BAR (ปรับปรุงใหม่ตามข้อกำหนด) ================= -->
-  <div id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-2px_15px_rgba(0,0,0,0.05)] select-none">
-    <div class="max-w-3xl mx-auto flex items-center justify-between px-1 sm:px-4 pt-1 pb-[max(0.375rem,env(safe-area-inset-bottom))]">
+  <div id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] select-none">
+    <div class="max-w-md sm:max-w-xl mx-auto flex items-center justify-between px-2 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))]">
       
       <!-- Tab 1: หน้าหลัก -->
-      <button onclick="setViewMode('home')" id="bottom-nav-home" class="flex-1 min-w-0 flex flex-col items-center justify-center py-0.5 text-[#0d55cf] font-bold transition-all duration-200 group">
-        <div id="bottom-pill-home" class="w-12 h-7 rounded-full bg-blue-50 text-[#0d55cf] flex items-center justify-center shadow-xs transition-all duration-200 relative">
-          <i class="fa-solid fa-house text-[19px] scale-105 transition-transform duration-200"></i>
+      <button onclick="setViewMode('home')" id="bottom-nav-home" class="flex-1 min-w-0 flex flex-col items-center justify-center py-1 text-[#0d55cf] font-bold transition-all duration-200 group active:scale-95">
+        <div id="bottom-pill-home" class="w-14 h-8 rounded-full bg-blue-50 text-[#0d55cf] flex items-center justify-center shadow-xs transition-all duration-200 relative">
+          <i class="fa-solid fa-house text-xl scale-105 transition-transform duration-200"></i>
         </div>
-        <span class="text-[11px] font-bold leading-tight tracking-tight mt-0.5 truncate max-w-full px-1">หน้าหลัก</span>
+        <span class="text-xs font-bold leading-tight tracking-tight mt-1 truncate max-w-full px-1">หน้าหลัก</span>
       </button>
 
       <!-- Tab 2: ประวัติคำร้อง (นักเรียน) / การอนุมัติ (อาจารย์, หัวหน้าแผนก, งานปกครอง, Admin) -->
-      <button onclick="handleMiddleTabClick()" id="bottom-nav-history" class="flex-1 min-w-0 flex flex-col items-center justify-center py-0.5 text-slate-400 hover:text-slate-600 transition-all duration-200 group">
-        <div id="bottom-pill-history" class="w-12 h-7 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
-          <i id="bottom-icon-history" class="fa-solid fa-clock-rotate-left text-[18px] transition-transform duration-200"></i>
+      <button onclick="handleMiddleTabClick()" id="bottom-nav-history" class="flex-1 min-w-0 flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-700 transition-all duration-200 group active:scale-95">
+        <div id="bottom-pill-history" class="w-14 h-8 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
+          <i id="bottom-icon-history" class="fa-solid fa-clock-rotate-left text-xl transition-transform duration-200"></i>
           <!-- Notification Badge สำหรับครู/ผู้อนุมัติ -->
-          <span id="bottom-badge-approval" class="absolute -top-1 -right-0.5 min-w-[17px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-xs hidden leading-none ring-2 ring-white">0</span>
+          <span id="bottom-badge-approval" class="absolute -top-1 -right-0.5 min-w-[18px] h-4 px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center shadow-xs hidden leading-none ring-2 ring-white">0</span>
         </div>
-        <span id="bottom-text-history" class="text-[11px] font-medium leading-tight tracking-tight mt-0.5 truncate max-w-full px-1">ประวัติคำร้อง</span>
+        <span id="bottom-text-history" class="text-xs font-bold leading-tight tracking-tight mt-1 truncate max-w-full px-1">ประวัติคำร้อง</span>
       </button>
 
       <!-- Tab 3: สถิติ & รายงาน (เฉพาะ ครูที่ปรึกษา, หัวหน้าแผนก, งานปกครอง, ผู้ดูแลระบบ - นักเรียนไม่แสดง) -->
-      <button onclick="setViewMode('stats')" id="bottom-nav-stats" class="flex-1 min-w-0 flex flex-col items-center justify-center py-0.5 text-slate-400 hover:text-slate-600 transition-all duration-200 group hidden">
-        <div id="bottom-pill-stats" class="w-12 h-7 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
-          <i class="fa-solid fa-chart-pie text-[18px] transition-transform duration-200"></i>
+      <button onclick="setViewMode('stats')" id="bottom-nav-stats" class="flex-1 min-w-0 flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-700 transition-all duration-200 group hidden active:scale-95">
+        <div id="bottom-pill-stats" class="w-14 h-8 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
+          <i class="fa-solid fa-chart-pie text-xl transition-transform duration-200"></i>
         </div>
-        <span class="text-[11px] font-medium leading-tight tracking-tight mt-0.5 truncate max-w-full px-1">สถิติ</span>
+        <span class="text-xs font-bold leading-tight tracking-tight mt-1 truncate max-w-full px-1">สถิติ</span>
       </button>
 
       <!-- Tab 4: โปรไฟล์ -->
-      <button onclick="setViewMode('profile')" id="bottom-nav-profile" class="flex-1 min-w-0 flex flex-col items-center justify-center py-0.5 text-slate-400 hover:text-slate-600 transition-all duration-200 group">
-        <div id="bottom-pill-profile" class="w-12 h-7 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
-          <i class="fa-solid fa-circle-user text-[18px] transition-transform duration-200"></i>
+      <button onclick="setViewMode('profile')" id="bottom-nav-profile" class="flex-1 min-w-0 flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-700 transition-all duration-200 group active:scale-95">
+        <div id="bottom-pill-profile" class="w-14 h-8 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
+          <i class="fa-solid fa-circle-user text-xl transition-transform duration-200"></i>
         </div>
-        <span class="text-[11px] font-medium leading-tight tracking-tight mt-0.5 truncate max-w-full px-1">โปรไฟล์</span>
+        <span class="text-xs font-bold leading-tight tracking-tight mt-1 truncate max-w-full px-1">โปรไฟล์</span>
       </button>
 
-      <!-- Tab 5: จัดการระบบ (Admin Panel - ซ่อนในแถบล่างเสมอ ให้ใช้ 4 เมนูเท่ากับครูตามข้อกำหนด) -->
-      <button onclick="setViewMode('admin')" id="bottom-nav-admin" class="flex-1 min-w-0 flex flex-col items-center justify-center py-0.5 text-slate-400 hover:text-slate-600 transition-all duration-200 group hidden">
-        <div id="bottom-pill-admin" class="w-12 h-7 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
-          <i class="fa-solid fa-gears text-[18px] transition-transform duration-200"></i>
+      <!-- Tab 5: จัดการระบบ (Admin Panel) -->
+      <button onclick="setViewMode('admin')" id="bottom-nav-admin" class="flex-1 min-w-0 flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-700 transition-all duration-200 group hidden active:scale-95">
+        <div id="bottom-pill-admin" class="w-14 h-8 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 relative">
+          <i class="fa-solid fa-gears text-xl transition-transform duration-200"></i>
         </div>
-        <span class="text-[11px] font-medium leading-tight tracking-tight mt-0.5 truncate max-w-full px-1">จัดการระบบ</span>
+        <span class="text-xs font-bold leading-tight tracking-tight mt-1 truncate max-w-full px-1">จัดการระบบ</span>
       </button>
 
     </div>

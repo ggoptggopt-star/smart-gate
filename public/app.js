@@ -622,13 +622,6 @@ function getCurrentUser() {
 
 // ====================== 5-STEP ROLE & QUEUE HELPERS ======================
 function getApproverStepForRole(role, totalSteps = 5) {
-  if (totalSteps === 4) {
-    if (role === 'advisor') return 1;
-    if (role === 'dept_head') return 2;
-    if (role === 'discipline_head') return 3;
-    if (role === 'deputy_director' || role === 'admin') return 4;
-    return 1;
-  }
   if (totalSteps === 3) {
     if (role === 'advisor' || role === 'subject_teacher') return 1;
     if (role === 'dept_head') return 2;
@@ -643,56 +636,41 @@ function getApproverStepForRole(role, totalSteps = 5) {
   return 1;
 }
 
-function getStepPositionLabel(step, totalSteps = 4) {
-  if (totalSteps === 4) {
-    return {
-      1: 'ครูที่ปรึกษา',
-      2: 'หัวหน้าแผนกวิชา',
-      3: 'ฝ่ายปกครอง / งานหลักสูตร',
-      4: 'รองผู้อำนวยการ'
-    }[step] || `ขั้นที่ ${step}`;
-  }
+function getStepPositionLabel(step, totalSteps = 5) {
   if (totalSteps === 3) {
-    return { 1: 'ครูที่ปรึกษา', 2: 'หัวหน้าแผนกวิชา', 3: 'ฝ่ายปกครอง' }[step] || `ขั้นที่ ${step}`;
+    const m3 = {
+      1: { title: 'ครูที่ปรึกษา', short: 'ที่ปรึกษา' },
+      2: { title: 'หัวหน้าแผนก', short: 'หน.แผนก' },
+      3: { title: 'ครูปกครอง', short: 'ครูปกครอง' }
+    };
+    const v = m3[step] || { title: `ขั้นที่ ${step}`, short: `ขั้น ${step}` };
+    return { title: v.title, short: v.short, toString: () => v.title };
   }
-  return {
-    1: 'ครูรายวิชา',
-    2: 'ครูที่ปรึกษา',
-    3: 'หัวหน้าแผนกวิชา',
-    4: 'ฝ่ายปกครอง',
-    5: 'รองผู้อำนวยการ'
-  }[step] || `ขั้นที่ ${step}`;
+  const m5 = {
+    1: { title: 'ครูรายวิชา', short: 'ครูรายวิชา' },
+    2: { title: 'ครูที่ปรึกษา', short: 'ที่ปรึกษา' },
+    3: { title: 'หัวหน้าแผนก', short: 'หน.แผนก' },
+    4: { title: 'ครูปกครอง', short: 'ครูปกครอง' },
+    5: { title: 'รองฝ่ายกิจการ', short: 'รองฝ่ายกิจการ' }
+  };
+  const v = m5[step] || { title: `ขั้นที่ ${step}`, short: `ขั้น ${step}` };
+  return { title: v.title, short: v.short, toString: () => v.title };
 }
 
 function getRequestWaitingTeacherName(r, stepNum) {
   if (!r) return '';
-  const total = Number(r.totalSteps || 4);
+  const total = Number(r.totalSteps || 5);
   const deptName = (r.deptName || '').split('(')[0].trim();
   const deptObj = DEPARTMENTS_DATA[deptName] || Object.values(DEPARTMENTS_DATA).find(d => isDepartmentMatch(d.name, deptName));
 
-  if (total === 4) {
-    if (stepNum === 1) return r.advisorName || deptObj?.teacher?.name || 'ครูที่ปรึกษา';
-    if (stepNum === 2) return deptObj?.head?.name || 'หัวหน้าแผนกวิชา';
-    if (stepNum === 3) return 'อ.เกรียงไกร รักษา วินัย (ฝ่ายปกครอง)';
-    if (stepNum === 4) return 'รองผอ.ดร.ภูมิพัฒน์ บริหารกิจ';
-    return '';
-  }
-
-  if (total === 3) {
-    if (stepNum === 1) return deptObj?.teacher?.name || 'ครูที่ปรึกษา';
-    if (stepNum === 2) return deptObj?.head?.name || 'หัวหน้าแผนกวิชา';
-    if (stepNum === 3) return 'อ.เกรียงไกร รักษาวินัย';
-    return '';
-  }
-
   if (stepNum === 1) {
-    if (r.step1Skipped) return 'ไม่มีคาบเรียน';
+    if (r.step1Skipped) return 'ไม่มีคาบเรียน / ช่วงกลางวัน (ผ่าน)';
     return r.subjectTeacherName || deptObj?.subjectTeacher?.name || 'ครูรายวิชา';
   }
-  if (stepNum === 2) return deptObj?.teacher?.name || 'ครูที่ปรึกษา';
-  if (stepNum === 3) return deptObj?.head?.name || 'หัวหน้าแผนกวิชา';
-  if (stepNum === 4) return 'อ.เกรียงไกร รักษาวินัย';
-  if (stepNum === 5) return 'ดร.เกียรติศักดิ์ พัฒนากิจ';
+  if (stepNum === 2) return r.advisorName || deptObj?.teacher?.name || 'ครูที่ปรึกษา';
+  if (stepNum === 3) return deptObj?.head?.name || 'หัวหน้าแผนก';
+  if (stepNum === 4) return 'อ.เกรียงไกร รักษา วินัย (ครูปกครอง)';
+  if (stepNum === 5) return 'รองผอ.ดร.ภูมิพัฒน์ บริหารกิจ (รองฝ่ายกิจการ)';
   return '';
 }
 
@@ -702,7 +680,7 @@ function isRequestInApproverQueue(user, r, includeDelegateMode = false) {
   if (r.status === 'rejected' || r.status === 'approved' || r.status === 'exited' || r.status === 'returned' || r.status === 'expired') return false;
   if (typeof isRequestExpired === 'function' && isRequestExpired(r)) return false;
 
-  const totalSteps = Number(r.totalSteps || 4);
+  const totalSteps = Number(r.totalSteps || 5);
   const currentStep = Number(r.currentStep || 1);
   const userStep = getApproverStepForRole(user.role, totalSteps);
 
@@ -2757,26 +2735,19 @@ function renderUnifiedStepper(r, compact = false) {
   const emergencyOverride = Boolean(r.emergencyOverride);
   const history = Array.isArray(r.approvalHistory) ? r.approvalHistory : [];
 
-  const stepsDef = totalSteps === 4
+  const stepsDef = totalSteps === 3
     ? [
         { num: 1, title: 'ครูที่ปรึกษา', shortTitle: 'ที่ปรึกษา' },
-        { num: 2, title: 'หัวหน้าแผนกวิชา', shortTitle: 'หน.แผนก' },
-        { num: 3, title: 'ฝ่ายปกครอง/หลักสูตร', shortTitle: 'ปกครอง' },
-        { num: 4, title: 'รองผู้อำนวยการ', shortTitle: 'รอง ผอ.' }
+        { num: 2, title: 'หัวหน้าแผนก', shortTitle: 'หน.แผนก' },
+        { num: 3, title: 'ครูปกครอง', shortTitle: 'ครูปกครอง' }
       ]
-    : (totalSteps === 3
-      ? [
-          { num: 1, title: 'ครูที่ปรึกษา', shortTitle: 'ที่ปรึกษา' },
-          { num: 2, title: 'หัวหน้าแผนก', shortTitle: 'หน.แผนก' },
-          { num: 3, title: 'ฝ่ายปกครอง', shortTitle: 'ปกครอง' }
-        ]
-      : [
-          { num: 1, title: 'ครูรายวิชา', shortTitle: 'ครูวิชา' },
-          { num: 2, title: 'ครูที่ปรึกษา', shortTitle: 'ที่ปรึกษา' },
-          { num: 3, title: 'หัวหน้าแผนกวิชา', shortTitle: 'หน.แผนก' },
-          { num: 4, title: 'ฝ่ายปกครอง', shortTitle: 'ปกครอง' },
-          { num: 5, title: 'รองผู้อำนวยการ', shortTitle: 'รอง ผอ.' }
-        ]);
+    : [
+        { num: 1, title: 'ครูรายวิชา', shortTitle: 'ครูรายวิชา' },
+        { num: 2, title: 'ครูที่ปรึกษา', shortTitle: 'ที่ปรึกษา' },
+        { num: 3, title: 'หัวหน้าแผนก', shortTitle: 'หน.แผนก' },
+        { num: 4, title: 'ครูปกครอง', shortTitle: 'ครูปกครอง' },
+        { num: 5, title: 'รองฝ่ายกิจการ', shortTitle: 'รองฝ่ายกิจการ' }
+      ];
 
   let nodesHtml = '';
   stepsDef.forEach((s, idx) => {
@@ -2791,15 +2762,17 @@ function renderUnifiedStepper(r, compact = false) {
     let subTextHtml = '';
     let rightConnectorClass = 'border-t-2 border-slate-200';
 
-    // กรณีพิเศษ: ขั้นที่ 1 ไม่มีคาบเรียน (Requirement 15: เครื่องหมาย ✕ สีเทา วงกลมเส้นประ + เส้นเชื่อมประ + ข้อความ "ไม่มีคาบเรียน")
+    // กรณีพิเศษ: ขั้นที่ 1 คาบว่าง หรือ ช่วงกลางวัน (ข้ามอัตโนมัติไปยังครูที่ปรึกษา)
     if (totalSteps === 5 && stepNum === 1 && step1Skipped) {
       circleHtml = `
-        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-slate-100 text-slate-500 border-2 border-dashed border-slate-400 flex items-center justify-center font-bold shrink-0" title="ข้ามอัตโนมัติ: ไม่มีคาบเรียน">
+        <div class="${compact ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs'} rounded-full bg-slate-100 text-slate-500 border-2 border-dashed border-slate-400 flex items-center justify-center font-bold shrink-0" title="ข้ามอัตโนมัติ: คาบว่าง หรือ ช่วงกลางวัน">
           <span class="leading-none font-bold">✕</span>
         </div>
       `;
       labelTitleHtml = `<span class="text-[9px] sm:text-[11px] font-bold text-slate-500 mt-1 leading-tight">${compact ? s.shortTitle : s.title}</span>`;
-      subTextHtml = `<span class="text-[8px] sm:text-[10px] text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-1.5 py-0.2 rounded mt-0.5 font-semibold leading-tight">ไม่มีคาบเรียน</span>`;
+      const isLunch = r.step1SkipReason && r.step1SkipReason.includes('กลางวัน');
+      const skipTag = isLunch ? 'ช่วงกลางวัน (ผ่าน)' : 'คาบว่าง (ผ่าน)';
+      subTextHtml = `<span class="text-[8px] sm:text-[10px] text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-1.5 py-0.2 rounded mt-0.5 font-semibold leading-tight">${skipTag}</span>`;
       rightConnectorClass = 'border-t-2 border-dashed border-slate-400';
     } else if (isRejected && currentStep === stepNum) {
       // ถูกปฏิเสธในขั้นนี้ (Requirement 5 & 15: ✕ สีแดงทึบ วงกลมทึบ ข้อความ "ไม่อนุมัติ" แยกจากสีเทาชัดเจน)
@@ -5039,10 +5012,23 @@ async function submitOnePassForm() {
     destination = destOther;
   }
 
-  // โครงสร้าง 4 ขั้นตอน: คำร้องส่งตรงไปยังครูที่ปรึกษา ไม่ต้องเลือกวิชาหรือครูรายวิชา
+  // โครงสร้าง 5 ขั้นตอน (ครูรายวิชา -> ครูที่ปรึกษา -> หัวหน้าแผนก -> ครูปกครอง -> รองฝ่ายกิจการ)
+  // เงื่อนไข: ถ้าคาบว่าง หรือช่วงกลางวัน ให้ผ่านไปที่ครูที่ปรึกษาเลย
   let manualTeacherUsername = '';
   let manualTeacherName = '';
   let manualSubjectName = '';
+
+  if (currentTimetableMatchResult && currentTimetableMatchResult.manualTeacherRequired) {
+    const sel = document.getElementById('form-manual-teacher-select');
+    if (sel && sel.value) {
+      manualTeacherUsername = sel.value;
+      manualTeacherName = sel.options[sel.selectedIndex]?.getAttribute('data-name') || sel.options[sel.selectedIndex]?.text || '';
+      manualSubjectName = 'วิชาเลือกด้วยตนเอง';
+    }
+  }
+
+  const isStep1Skipped = Boolean(currentTimetableMatchResult?.step1Skipped);
+  const skipReason = currentTimetableMatchResult?.step1SkipReason || (isStep1Skipped ? 'คาบว่าง / ช่วงกลางวัน' : null);
 
   // เตรียมข้อมูลสรุปสำหรับ Confirm Dialog
   const requestTitle = isNoReturn ? 'ลากลับบ้าน (ไม่กลับเข้า)' : (type === 'medical' ? 'พบแพทย์ตามนัด' : 'ลากิจธุระจำเป็น');
@@ -5070,22 +5056,45 @@ async function submitOnePassForm() {
     departureTime: departureTime,
     expectedReturnTime: isNoReturn ? 'NO_RETURN' : expectedReturnTime,
     studentName: name,
-    totalSteps: 4,
-    workflowVersion: 4,
+    totalSteps: 5,
+    workflowVersion: 5,
+    step1Skipped: isStep1Skipped,
+    step1SkipReason: skipReason,
     manualTeacherUsername,
     manualTeacherName,
     manualSubjectName
   };
 
-  // แสดงข้อมูลสายอนุมัติ 4 ขั้นใน Confirm Modal
+  // แสดงข้อมูลสายอนุมัติใน Confirm Modal
   const modalSubjectPreview = document.getElementById('confirm-modal-subject-preview');
   if (modalSubjectPreview) {
-    modalSubjectPreview.innerHTML = `
-      <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-950 text-xs flex items-center gap-2">
-        <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-        <span>สายอนุมัติ 4 ขั้น: <strong>1. ครูที่ปรึกษา → 2. หัวหน้าแผนก → 3. ฝ่ายปกครอง/หลักสูตร → 4. รองผู้อำนวยการ</strong></span>
-      </div>
-    `;
+    if (isStep1Skipped) {
+      modalSubjectPreview.innerHTML = `
+        <div class="p-2.5 rounded-xl bg-slate-100 border border-slate-300 text-slate-800 text-xs space-y-1">
+          <div class="flex items-center gap-1.5 font-bold text-slate-700">
+            <span class="w-4 h-4 rounded-full bg-slate-200 text-slate-600 border border-dashed border-slate-400 flex items-center justify-center text-[9px]">✕</span>
+            <span>ขั้นที่ 1: ผ่านข้ามครูรายวิชา (${skipReason || 'คาบว่าง / ช่วงกลางวัน'})</span>
+          </div>
+          <div class="text-[11px] text-blue-700 font-semibold pl-5">
+            ลำดับการอนุมัติ 4 ขั้น: <strong>1. ครูที่ปรึกษา ➔ 2. หัวหน้าแผนก ➔ 3. ครูปกครอง ➔ 4. รองฝ่ายกิจการ</strong> (แล้วแสดง QR Code)
+          </div>
+        </div>
+      `;
+    } else {
+      const teacherDisplay = currentTimetableMatchResult?.primaryTeacher?.name || manualTeacherName || 'ครูผู้สอน';
+      const subjectDisplay = currentTimetableMatchResult?.primaryPeriod?.subjectName || manualSubjectName || 'วิชาในคาบเรียน';
+      modalSubjectPreview.innerHTML = `
+        <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-950 text-xs space-y-1">
+          <div class="font-bold flex items-center gap-1.5 text-blue-800">
+            <i class="fa-solid fa-clipboard-list text-blue-600"></i>
+            <span>สายอนุมัติ 5 ขั้น:</span>
+          </div>
+          <div class="text-[11px] text-blue-700 font-medium pl-4">
+            <strong>1. ครูรายวิชา</strong> (${teacherDisplay} - ${subjectDisplay}) ➔ <strong>2. ครูที่ปรึกษา</strong> ➔ <strong>3. หัวหน้าแผนก</strong> ➔ <strong>4. ครูปกครอง</strong> ➔ <strong>5. รองฝ่ายกิจการ</strong> (แล้วแสดง QR Code)
+          </div>
+        </div>
+      `;
+    }
   }
 
   // แสดงข้อมูลใน Modal ยืนยัน
@@ -5545,7 +5554,7 @@ function viewRequestDetail(requestId) {
           </div>
           <div>
             <h3 class="font-bold text-slate-800 text-base leading-tight">ขั้นตอนผลการพิจารณาคำร้อง (${totalSteps} ขั้น)</h3>
-            <p class="text-xs text-slate-400">${totalSteps === 4 ? 'ครูที่ปรึกษา → หัวหน้าแผนก → ฝ่ายปกครอง/หลักสูตร → รองผู้อำนวยการ' : (totalSteps === 5 ? 'ครูรายวิชา → ครูที่ปรึกษา → หัวหน้าแผนก → ฝ่ายปกครอง → รองผู้อำนวยการ' : 'ครูที่ปรึกษา → หัวหน้าแผนก → ฝ่ายปกครอง')}</p>
+            <p class="text-xs text-slate-400">${totalSteps === 3 ? 'ครูที่ปรึกษา → หัวหน้าแผนก → ครูปกครอง' : 'ครูรายวิชา (ถ้าคาบว่าง/ช่วงกลางวันจะผ่านข้าม) → ครูที่ปรึกษา → หัวหน้าแผนก → ครูปกครอง → รองฝ่ายกิจการ'}</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -6692,12 +6701,13 @@ async function exportRequestsToExcel() {
     ];
 
     const statusMap = {
-      'pending_advisor': 'รอครูที่ปรึกษา (ขั้น 1/4)',
-      'pending_dept_head': 'รอหัวหน้าแผนกวิชา (ขั้น 2/4)',
-      'pending_discipline': 'รอฝ่ายปกครอง/หลักสูตร (ขั้น 3/4)',
-      'pending_deputy': 'รอรองผู้อำนวยการ (ขั้น 4/4)',
-      'pending_deputy_director': 'รอรองผู้อำนวยการ (ขั้น 4/4)',
-      'pending_subject_teacher': 'รอครูรายวิชา (ระบบเดิม)',
+      'pending_subject': 'รอครูรายวิชา (ขั้น 1/5)',
+      'pending_subject_teacher': 'รอครูรายวิชา (ขั้น 1/5)',
+      'pending_advisor': 'รอครูที่ปรึกษา (ขั้น 2/5)',
+      'pending_dept_head': 'รอหัวหน้าแผนก (ขั้น 3/5)',
+      'pending_discipline': 'รอครูปกครอง (ขั้น 4/5)',
+      'pending_deputy': 'รอรองฝ่ายกิจการ (ขั้น 5/5)',
+      'pending_deputy_director': 'รอรองฝ่ายกิจการ (ขั้น 5/5)',
       'approved': 'อนุมัติแล้ว (ได้รับ QR Pass)',
       'exited': 'สแกนออกแล้ว',
       'returned': 'กลับเข้าแล้ว',
@@ -7169,12 +7179,36 @@ function openAddUserModal() {
     modal.classList.remove('hidden');
     handleAdminAddUserRoleChange();
   }
+  document.querySelectorAll('.admin-new-subject-classroom-cb').forEach(cb => { cb.checked = false; });
+  updateSubjectClassroomSummary();
+  document.getElementById('admin-new-subject-classroom-panel')?.classList.add('hidden');
 }
 
 function closeAddUserModal() {
   const modal = document.getElementById('modal-admin-add-user');
   if (modal) modal.classList.add('hidden');
 }
+
+function toggleSubjectClassroomDropdown(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('admin-new-subject-classroom-panel')?.classList.toggle('hidden');
+}
+
+function updateSubjectClassroomSummary() {
+  const summaryEl = document.getElementById('admin-new-subject-classroom-summary');
+  if (!summaryEl) return;
+  const selected = Array.from(document.querySelectorAll('.admin-new-subject-classroom-cb:checked')).map(cb => cb.value);
+  summaryEl.textContent = selected.length ? selected.join(', ') : 'เลือกชั้นที่สอน';
+}
+
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('admin-new-subject-classroom-panel');
+  const trigger = document.getElementById('admin-new-subject-classroom-trigger');
+  if (!panel || panel.classList.contains('hidden')) return;
+  if (!panel.contains(e.target) && e.target !== trigger && !trigger?.contains(e.target)) {
+    panel.classList.add('hidden');
+  }
+});
 
 async function handleAdminCreateUser(e) {
   if (e) e.preventDefault();

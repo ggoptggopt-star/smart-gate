@@ -1768,18 +1768,18 @@
               <span>หัวหน้าแผนก (ขั้น 3)</span>
               <span id="admin-count-dept_head" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-mono">0</span>
             </button>
-            <!-- ฝ่ายปกครอง (ขั้น 4) -->
+            <!-- ฝ่ายปกครอง / ครูปกครอง (ขั้น 4) -->
             <button type="button" onclick="setAdminRoleFilter('discipline_head')" id="admin-rf-discipline_head"
               class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1.5">
               <i class="fa-solid fa-shield-halved text-purple-600 text-[11px]"></i>
-              <span>ฝ่ายปกครอง (ขั้น 4)</span>
+              <span>ครูปกครอง (ขั้น 4)</span>
               <span id="admin-count-discipline_head" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-mono">0</span>
             </button>
-            <!-- รองผู้อำนวยการ (ขั้น 5) -->
+            <!-- รองฝ่ายกิจการ (ขั้น 5) -->
             <button type="button" onclick="setAdminRoleFilter('deputy_director')" id="admin-rf-deputy_director"
               class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1.5">
               <i class="fa-solid fa-user-tie text-rose-600 text-[11px]"></i>
-              <span>รอง ผอ. (ขั้น 5)</span>
+              <span>รองฝ่ายกิจการ (ขั้น 5)</span>
               <span id="admin-count-deputy_director" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-mono">0</span>
             </button>
             <!-- ผู้ดูแลระบบ (Admin) -->
@@ -1807,8 +1807,8 @@
                 <option value="subject_teacher">📖 ครูรายวิชา (ขั้น 1)</option>
                 <option value="advisor">👨‍🏫 ครูที่ปรึกษา (ขั้น 2)</option>
                 <option value="dept_head">🏢 หัวหน้าแผนกวิชา (ขั้น 3)</option>
-                <option value="discipline_head">🛡️ ฝ่ายปกครอง (ขั้น 4)</option>
-                <option value="deputy_director">🏛️ รองผู้อำนวยการ (ขั้น 5)</option>
+                <option value="discipline_head">🛡️ ครูปกครอง (ขั้น 4)</option>
+                <option value="deputy_director">🏛️ รองฝ่ายกิจการ (ขั้น 5)</option>
                 <option value="admin">⚙️ ผู้ดูแลระบบ (Admin)</option>
               </select>
             </div>
@@ -3677,24 +3677,29 @@
             </select>
           </div>
 
-          <!-- ชั้นที่สอน สำหรับครูรายวิชา (เลือกได้หลายชั้น เพราะครู 1 คนมักสอนหลายชั้นปี) -->
-          <div id="admin-add-subject-classroom-box" class="hidden">
+          <!-- ชั้นที่สอน สำหรับครูรายวิชา (เลือกได้หลายชั้น เพราะครู 1 คนมักสอนหลายชั้นปี) - dropdown ที่กดแล้วเด้ง checkbox -->
+          <div id="admin-add-subject-classroom-box" class="hidden relative">
             <label class="block text-slate-700 font-semibold mb-1 text-xs">ชั้นที่สอน (เลือกได้หลายชั้น)</label>
-            <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="admin-new-subject-classroom-trigger" onclick="toggleSubjectClassroomDropdown(event)"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-cyan-500 font-bold text-emerald-800 flex items-center justify-between gap-2 text-left">
+              <span id="admin-new-subject-classroom-summary" class="truncate">เลือกชั้นที่สอน</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 shrink-0"></i>
+            </button>
+            <div id="admin-new-subject-classroom-panel" class="hidden absolute z-10 mt-1 w-full p-2 bg-white border border-slate-200 rounded-xl shadow-lg grid grid-cols-3 gap-2">
               <label class="flex items-center gap-1.5 px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs cursor-pointer hover:border-cyan-400">
-                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.1"> ปวช.1
+                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.1" onchange="updateSubjectClassroomSummary()"> ปวช.1
               </label>
               <label class="flex items-center gap-1.5 px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs cursor-pointer hover:border-cyan-400">
-                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.2"> ปวช.2
+                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.2" onchange="updateSubjectClassroomSummary()"> ปวช.2
               </label>
               <label class="flex items-center gap-1.5 px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs cursor-pointer hover:border-cyan-400">
-                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.3"> ปวช.3
+                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวช.3" onchange="updateSubjectClassroomSummary()"> ปวช.3
               </label>
               <label class="flex items-center gap-1.5 px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs cursor-pointer hover:border-cyan-400">
-                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวส.1"> ปวส.1
+                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวส.1" onchange="updateSubjectClassroomSummary()"> ปวส.1
               </label>
               <label class="flex items-center gap-1.5 px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs cursor-pointer hover:border-cyan-400">
-                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวส.2"> ปวส.2
+                <input type="checkbox" class="admin-new-subject-classroom-cb w-3.5 h-3.5" value="ปวส.2" onchange="updateSubjectClassroomSummary()"> ปวส.2
               </label>
             </div>
             <p class="text-[10px] text-slate-400 mt-1">ไม่เลือกก็บันทึกได้ — ระบบจะเพิ่มชั้นให้อัตโนมัติเองทีหลังตอนนำเข้าตารางสอนที่มีชื่อครูท่านนี้</p>

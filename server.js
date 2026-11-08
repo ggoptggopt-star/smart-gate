@@ -845,6 +845,27 @@ function matchTimetableForLeave({ department, classroom, leaveDate, departureTim
   const isNoRet = Boolean(noReturn || expectedReturnTime === 'NO_RETURN');
   const retMins = isNoRet ? (16 * 60) : parseTimeToMins(expectedReturnTime || '15:30');
 
+  // ตรวจสอบช่วงเวลาพักกลางวัน (12:00 - 13:00 น.) ตามเงื่อนไข: "ถ้าคาบว่าง หรือ ช่วงกลางวัน ให้ผ่านไปที่ ครูที่ปรึกษาเลย"
+  const isLunchBreakTime = (depMins >= 720 && depMins < 780 && retMins <= 780);
+  if (isLunchBreakTime) {
+    return {
+      matchStatus: 'no_class_skip',
+      hasClassroomTimetable: true,
+      semester: activeSemester,
+      department: cleanDept,
+      classroom: cleanClass,
+      leaveDate,
+      step1Skipped: true,
+      step1SkipReason: 'ช่วงพักกลางวัน (12:00 - 13:00 น.)',
+      manualTeacherRequired: false,
+      advisorFlagVerify: false,
+      message: 'ช่วงเวลานี้ตรงกับ "ช่วงพักกลางวัน (12:00 - 13:00 น.)" คำร้องนี้ไม่ต้องผ่านครูรายวิชา ระบบจะข้ามขั้นที่ 1 ไปยังครูที่ปรึกษา (ขั้นที่ 2) อัตโนมัติ',
+      matchedPeriods: [],
+      primaryPeriod: null,
+      notifiedTeachers: []
+    };
+  }
+
   // หาคาบทั้งหมดที่ทับซ้อนกับช่วงเวลาขอออก (start < retMins && end > depMins)
   const overlapping = dayEntries
     .filter(e => {
@@ -884,19 +905,20 @@ function matchTimetableForLeave({ department, classroom, leaveDate, departureTim
       return { ...e };
     });
 
-  // หากช่วงเวลาที่ขอไม่ตรงกับคาบใดเลยในตารางสอนของห้องนั้น
+  // หากช่วงเวลาที่ขอไม่ตรงกับคาบใดเลยในตารางสอนของห้องนั้น -> ถือเป็นคาบว่างตามตารางเรียน (ข้ามครูรายวิชาไปครูที่ปรึกษาอัตโนมัติ)
   if (overlapping.length === 0) {
     return {
-      matchStatus: 'no_slot_data',
+      matchStatus: 'no_class_skip',
       hasClassroomTimetable: true,
       semester: activeSemester,
       department: cleanDept,
       classroom: cleanClass,
       leaveDate,
-      step1Skipped: false,
-      manualTeacherRequired: true,
-      advisorFlagVerify: true,
-      message: `ไม่พบข้อมูลคาบเรียนในช่วงเวลา ${departureTime} - ${isNoRet ? '16:00' : expectedReturnTime} น. กรุณาเลือกครูรายวิชาด้วยตนเอง (ติดธงให้ครูที่ปรึกษาตรวจสอบ)`,
+      step1Skipped: true,
+      step1SkipReason: 'คาบว่าง (ไม่มีวิชาเรียนในช่วงเวลานี้)',
+      manualTeacherRequired: false,
+      advisorFlagVerify: false,
+      message: `ช่วงเวลา ${departureTime} - ${isNoRet ? '16:00' : expectedReturnTime} น. ไม่มีวิชาเรียน (คาบว่าง) ระบบจะข้ามขั้นที่ 1 ไปยังครูที่ปรึกษาอัตโนมัติ`,
       matchedPeriods: [],
       primaryPeriod: null,
       notifiedTeachers: []
@@ -906,7 +928,7 @@ function matchTimetableForLeave({ department, classroom, leaveDate, departureTim
   // 4. แยกคาบเรียนปกติ (study) ออกจากคาบว่าง/พักเที่ยง/กิจกรรม/เรียนรู้ด้วยตนเอง (free, break, activity, self_study)
   const studyPeriods = overlapping.filter(p => p.periodType === 'study');
 
-  // ข้อ 15: ช่วงเวลาที่ไม่มีคาบเรียน (คาบว่าง, พักเที่ยง, คาบกิจกรรม, คาบเรียนรู้ด้วยตนเอง, หรืองดสอนรายวัน)
+  // ข้อ 15: ช่วงเวลาที่ไม่มีคาบเรียน (คาบว่าง, พักเที่ยง, คาบกิจกรรม, คาบเรียนรู้ด้วยตนเอง, หรืองดสอนรายวัน) -> ข้ามขั้นครูรายวิชาอัตโนมัติ
   if (studyPeriods.length === 0) {
     const labels = overlapping.map(p => {
       if (p.isCancelledOverride) return `งดสอนวิชา${p.subjectName}`;
@@ -915,7 +937,8 @@ function matchTimetableForLeave({ department, classroom, leaveDate, departureTim
       if (p.periodType === 'self_study') return `คาบเรียนรู้ด้วยตนเอง (${p.subjectName || 'ไม่มีอาจารย์ผู้สอน'})`;
       return `${p.subjectName && p.subjectName !== 'คาบว่าง' ? p.subjectName : 'คาบว่าง'} (${p.startTime}-${p.endTime} น.)`;
     });
-    const reasonText = `ไม่มีคาบเรียน (${labels.join(', ')})`;
+    const isLunch = overlapping.some(p => p.periodType === 'break') || (depMins >= 720 && retMins <= 780);
+    const reasonText = isLunch ? `ช่วงพักกลางวัน (${labels.join(', ')})` : `คาบว่าง / ไม่มีคาบเรียน (${labels.join(', ')})`;
 
     return {
       matchStatus: 'no_class_skip',
@@ -3253,8 +3276,8 @@ app.delete('/api/delegations/:id', authenticateToken, (req, res) => {
   res.json({ success: true, message: 'ยกเลิกการมอบหมายอนุมัติแทนเรียบร้อยแล้ว', delegations: list });
 });
 
-// Helper: หาชื่อครูและตำแหน่งของแต่ละขั้นสำหรับแสดงบน Stepper (โครงสร้าง 4 ขั้นตอนตามวิทยาลัยการอาชีพ)
-function resolveStepApproversInfo(deptName, meta = {}, totalSteps = 4) {
+// Helper: หาชื่อครูและตำแหน่งของแต่ละขั้นสำหรับแสดงบน Stepper (โครงสร้าง 5 ขั้นตอน: ครูรายวิชา -> ครูที่ปรึกษา -> หัวหน้าแผนก -> ครูปกครอง -> รองฝ่ายกิจการ)
+function resolveStepApproversInfo(deptName, meta = {}, totalSteps = 5) {
   const depts = loadDepartments();
   const matchedDept = depts.find(d => isDepartmentMatchServer(d.name, deptName)) || depts[0] || {
     name: 'แผนกวิชาช่างยนต์',
@@ -3280,55 +3303,28 @@ function resolveStepApproversInfo(deptName, meta = {}, totalSteps = 4) {
     }
   }
 
-  // โครงสร้างมาตรฐาน 4 ขั้นตอน (ครูที่ปรึกษา -> หัวหน้าแผนก -> ฝ่ายปกครอง/งานหลักสูตร -> รองผู้อำนวยการ)
-  if (totalSteps === 4) {
-    return {
-      1: {
-        step: 1,
-        role: 'advisor',
-        roleLabel: 'ครูที่ปรึกษา',
-        username: resolvedAdvisorUsername,
-        name: resolvedAdvisorName
-      },
-      2: {
-        step: 2,
-        role: 'dept_head',
-        roleLabel: 'หัวหน้าแผนกวิชา',
-        username: matchedDept.head ? matchedDept.head.username : 'head_auto',
-        name: matchedDept.head ? matchedDept.head.name : 'อ.ประสิทธิ์ ยานยนต์'
-      },
-      3: {
-        step: 3,
-        role: 'discipline_head',
-        roleLabel: 'ฝ่ายปกครอง / งานหลักสูตร',
-        username: 'discipline',
-        name: 'อ.เกรียงไกร รักษา วินัย'
-      },
-      4: {
-        step: 4,
-        role: 'deputy_director',
-        roleLabel: 'รองผู้อำนวยการ',
-        username: 'deputy',
-        name: 'รองผอ.ดร.ภูมิพัฒน์ บริหารกิจ'
-      }
-    };
-  }
-
+  // รองรับคำร้องเดิมแบบ 3 ขั้นตอน (Legacy 3-step)
   if (totalSteps === 3) {
     return {
       1: { step: 1, role: 'advisor', roleLabel: 'ครูที่ปรึกษา', username: resolvedAdvisorUsername, name: resolvedAdvisorName },
-      2: { step: 2, role: 'dept_head', roleLabel: 'หัวหน้าแผนกวิชา', username: matchedDept.head ? matchedDept.head.username : 'head_auto', name: matchedDept.head ? matchedDept.head.name : 'อ.ประสิทธิ์ ยานยนต์' },
-      3: { step: 3, role: 'discipline_head', roleLabel: 'ฝ่ายปกครอง', username: 'discipline', name: 'อ.เกรียงไกร รักษา วินัย' }
+      2: { step: 2, role: 'dept_head', roleLabel: 'หัวหน้าแผนก', username: matchedDept.head ? matchedDept.head.username : 'head_auto', name: matchedDept.head ? matchedDept.head.name : 'อ.ประสิทธิ์ ยานยนต์' },
+      3: { step: 3, role: 'discipline_head', roleLabel: 'ครูปกครอง', username: 'discipline', name: 'อ.เกรียงไกร รักษา วินัย' }
     };
   }
 
+  // โครงสร้างมาตรฐาน 5 ขั้นตอน:
+  // 1. ครูรายวิชา (ถ้าคาบว่าง หรือช่วงกลางวัน ให้ผ่านไปที่ครูที่ปรึกษาเลย)
+  // 2. ครูที่ปรึกษา (รออนุมัติ)
+  // 3. หัวหน้าแผนก
+  // 4. ครูปกครอง
+  // 5. รองฝ่ายกิจการ
   return {
     1: {
       step: 1,
       role: 'subject_teacher',
       roleLabel: 'ครูรายวิชา',
       username: meta.subjectTeacherUsername || (matchedDept.subjectTeacher ? matchedDept.subjectTeacher.username : 'subject_auto'),
-      name: meta.step1Skipped ? 'ไม่มีคาบเรียน' : (meta.subjectTeacherName || (matchedDept.subjectTeacher ? matchedDept.subjectTeacher.name : 'อ.ธีรพงศ์ เครื่องยนต์'))
+      name: meta.step1Skipped ? (meta.step1SkipReason || 'คาบว่าง / ช่วงกลางวัน (ผ่าน)') : (meta.subjectTeacherName || (matchedDept.subjectTeacher ? matchedDept.subjectTeacher.name : 'อ.ธีรพงศ์ เครื่องยนต์'))
     },
     2: {
       step: 2,
@@ -3340,21 +3336,21 @@ function resolveStepApproversInfo(deptName, meta = {}, totalSteps = 4) {
     3: {
       step: 3,
       role: 'dept_head',
-      roleLabel: 'หัวหน้าแผนกวิชา',
+      roleLabel: 'หัวหน้าแผนก',
       username: matchedDept.head ? matchedDept.head.username : 'head_auto',
       name: matchedDept.head ? matchedDept.head.name : 'อ.ประสิทธิ์ ยานยนต์'
     },
     4: {
       step: 4,
       role: 'discipline_head',
-      roleLabel: 'ฝ่ายปกครอง',
+      roleLabel: 'ครูปกครอง',
       username: 'discipline',
       name: 'อ.เกรียงไกร รักษา วินัย'
     },
     5: {
       step: 5,
       role: 'deputy_director',
-      roleLabel: 'รองผู้อำนวยการ',
+      roleLabel: 'รองฝ่ายกิจการ',
       username: 'deputy',
       name: 'รองผอ.ดร.ภูมิพัฒน์ บริหารกิจ'
     }
@@ -3398,11 +3394,10 @@ app.get('/api/requests', async (req, res) => {
               ? resolvedDeptName.split('(')[1].replace(')', '').trim()
               : (r.users && r.users.classrooms ? r.users.classrooms.name : 'ปวช.3'));
 
-          // โครงสร้างขั้นตอนการอนุมัติ (ค่าเริ่มต้น 4 ขั้นตอน: ครูที่ปรึกษา -> หน.แผนก -> ปกครอง/หลักสูตร -> รอง ผอ.)
-          let totalSteps = 4;
+          // โครงสร้างขั้นตอนการอนุมัติ (ค่าเริ่มต้น 5 ขั้นตอน: ครูรายวิชา -> ครูที่ปรึกษา -> หน.แผนก -> ครูปกครอง -> รองฝ่ายกิจการ)
+          let totalSteps = 5;
           if (meta.totalSteps) totalSteps = Number(meta.totalSteps);
           else if (r.total_steps) totalSteps = Number(r.total_steps);
-          else if (r.status === 'pending_subject' || meta.workflowVersion === 5) totalSteps = 5;
           else if (meta.workflowVersion === 3) totalSteps = 3;
 
           const currentStep = Number(r.current_step || 1);
@@ -3444,7 +3439,7 @@ app.get('/api/requests', async (req, res) => {
             status: r.status,
             currentStep,
             totalSteps,
-            workflowVersion: isFiveStep ? 5 : 3,
+            workflowVersion: totalSteps === 3 ? 3 : 5,
             qrToken: r.qr_token,
             isQrUsed: r.is_qr_used,
             rejectionReason: r.rejection_reason || meta.rejectionReason || null,
@@ -3484,7 +3479,84 @@ app.get('/api/requests', async (req, res) => {
       console.error('Fetch requests error:', err);
     }
   }
-  res.json({ requests: [] });
+  // โหมด Offline/Local Storage Fallback: ดึงรายการคำร้องจาก data/requests_meta.json
+  const metaAll = loadRequestsMeta();
+  const rawItems = Object.values(metaAll).filter(m => m && (m.requestNo || m.id));
+  const seenKeys = new Set();
+  const uniqueItems = [];
+  for (const m of rawItems) {
+    const key = m.requestNo || m.id;
+    if (key && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      uniqueItems.push(m);
+    }
+  }
+
+  const formattedOffline = uniqueItems.map(m => {
+    const totalSteps = 5;
+    const isSkipped = Boolean(m.step1Skipped);
+    const currentStep = Number(m.currentStep || (m.status === 'approved' ? 6 : (isSkipped ? 2 : 1)));
+    const stepApprovers = resolveStepApproversInfo(m.deptName || 'แผนกวิชาช่างยนต์', m, totalSteps);
+    return {
+      id: m.id || m.requestId || Date.now(),
+      requestNo: m.requestNo || 'OP-25690001',
+      studentId: m.studentId || '00000000-0000-0000-0000-000000000001',
+      studentName: m.studentName || 'นายธนภัทร รัตนโชติ',
+      studentCode: m.studentCode || '66209010012',
+      deptName: m.deptName || 'แผนกวิชาช่างยนต์',
+      classroomName: m.classroomName || 'ปวช.3',
+      plateNo: m.plateNo || '-',
+      platePhoto: m.platePhoto || null,
+      parentPhone: m.parentPhone || null,
+      profilePhoto: null,
+      title: m.title || 'ลากิจธุระจำเป็น',
+      reason: m.reason || 'ธุระจำเป็น',
+      destination: m.destination || null,
+      travelMode: m.travelMode || 'own',
+      pickupName: m.pickupName || null,
+      pickupPlate: m.pickupPlate || null,
+      noReturn: Boolean(m.noReturn),
+      evidencePhoto: m.evidencePhoto || null,
+      actualReturnTime: m.actualReturnTime || null,
+      isWaived: Boolean(m.isWaived),
+      waiverNote: m.waiverNote || null,
+      leaveType: m.leaveType || 'personal',
+      leaveDate: m.leaveDate || getThaiDateStr(),
+      departureTime: m.departureTime || '13:00',
+      expectedReturnTime: m.expectedReturnTime || '15:30',
+      status: m.status || (isSkipped ? 'pending_advisor' : 'pending_subject'),
+      currentStep,
+      totalSteps,
+      workflowVersion: 5,
+      qrToken: m.qrToken || null,
+      isQrUsed: Boolean(m.isQrUsed),
+      rejectionReason: m.rejectionReason || null,
+      rejectedAtStep: m.rejectedAtStep || null,
+      rejectedByName: m.rejectedByName || null,
+      rejectedByRole: m.rejectedByRole || null,
+      createdAt: m.createdAt || new Date().toISOString(),
+      semesterCode: m.semesterCode || '1/2569',
+      subjectTeacherUsername: m.subjectTeacherUsername || (stepApprovers[1] ? stepApprovers[1].username : null),
+      subjectTeacherName: m.subjectTeacherName || (stepApprovers[1] ? stepApprovers[1].name : null),
+      subjectCode: m.subjectCode || null,
+      subjectName: m.subjectName || null,
+      periodTime: m.periodTime || null,
+      periodType: m.periodType || 'study',
+      step1Skipped: isSkipped,
+      step1SkipReason: m.step1SkipReason || null,
+      manualTeacherSelected: Boolean(m.manualTeacherSelected),
+      advisorFlagVerify: Boolean(m.advisorFlagVerify),
+      notifiedTeachers: Array.isArray(m.notifiedTeachers) ? m.notifiedTeachers : [],
+      approvalHistory: Array.isArray(m.approvalHistory) ? m.approvalHistory : [],
+      stepEnteredAt: m.stepEnteredAt || {},
+      currentStepEnteredAt: m.lastStepAt || m.createdAt || new Date().toISOString(),
+      waitingMinutes: 0,
+      stepApprovers,
+      currentApproverInfo: stepApprovers[currentStep] || null
+    };
+  }).reverse();
+
+  res.json({ requests: formattedOffline });
 });
 
 // ดึงข้อมูลสถิติภาพรวมสำหรับ Dashboard ฝ่ายบริหาร & ปกครอง
@@ -3776,12 +3848,97 @@ app.post('/api/requests', async (req, res) => {
   });
 
   const nowIso = new Date().toISOString();
-  let initialStep = 1;
-  let initialStatus = 'pending_advisor'; // โครงสร้างใหม่ 4 ขั้นตอน: เริ่มต้นที่ครูที่ปรึกษาโดยตรง (ไม่ผ่านครูรายวิชา)
-  let totalSteps = 4;
-  let snapshotPeriodTime = `${depTime}-${isNoReturn ? '16:00' : retTime}`;
+  const isManualFree = manualSubjectName && (manualSubjectName.includes('ว่าง') || manualSubjectName.includes('กลางวัน') || manualSubjectName.includes('เที่ยง'));
+  const step1Skipped = Boolean(ttMatch.step1Skipped || isManualFree);
+  const step1SkipReason = isManualFree ? 'ระบุคาบว่าง/ช่วงกลางวันด้วยตนเอง' : (ttMatch.step1SkipReason || (step1Skipped ? 'คาบว่าง / ช่วงกลางวัน' : null));
+
+  // โครงสร้าง 5 ขั้นตอน:
+  // ขั้นที่ 1: ครูรายวิชา (ถ้าคาบว่าง หรือช่วงกลางวัน ให้ผ่านไปที่ ครูที่ปรึกษาเลย)
+  // ขั้นที่ 2: ครูที่ปรึกษา (รออนุมัติ)
+  // ขั้นที่ 3: หัวหน้าแผนก
+  // ขั้นที่ 4: ครูปกครอง
+  // ขั้นที่ 5: รองฝ่ายกิจการ -> แล้วแสดง QR Code
+  const initialStep = step1Skipped ? 2 : 1;
+  const initialStatus = step1Skipped ? 'pending_advisor' : 'pending_subject';
+  const totalSteps = 5;
+  const snapshotPeriodTime = `${depTime}-${isNoReturn ? '16:00' : retTime}`;
+
+  let snapshotTeacherUser = ttMatch.primaryPeriod ? ttMatch.primaryPeriod.teacherUsername : (manualTeacherUsername || null);
+  let snapshotTeacherName = ttMatch.primaryPeriod ? ttMatch.primaryPeriod.teacherName : (manualTeacherName || null);
+  let snapshotSubjectCode = ttMatch.primaryPeriod ? ttMatch.primaryPeriod.subjectCode : null;
+  let snapshotSubjectName = ttMatch.primaryPeriod ? ttMatch.primaryPeriod.subjectName : (manualSubjectName || (step1Skipped ? step1SkipReason : 'คาบเรียนปกติ'));
+
   const approvalHistory = [];
   const stepEnteredAt = { '1': nowIso };
+
+  if (step1Skipped) {
+    stepEnteredAt['2'] = nowIso;
+    approvalHistory.push({
+      step: 1,
+      role: 'subject_teacher',
+      roleLabel: 'ครูรายวิชา',
+      approverUsername: 'system',
+      approverName: 'ระบบอัตโนมัติ (ผ่านข้าม)',
+      action: 'skipped_no_class',
+      note: `ผ่านข้ามขั้นครูรายวิชาอัตโนมัติ (${step1SkipReason})`,
+      actionAt: nowIso
+    });
+  }
+
+  // เตรียม metaPayload
+  const metaPayload = {
+    requestNo,
+    workflowVersion: 5,
+    totalSteps: 5,
+    studentName: reqStudentName || storedProf.full_name || 'นายธนภัทร รัตนโชติ',
+    studentCode: studentCode || storedProf.student_code || '66209010012',
+    deptName: resolvedDept,
+    classroomName: resolvedClass,
+    semesterCode: '1/2569',
+    periodTime: snapshotPeriodTime,
+    subjectTeacherUsername: snapshotTeacherUser,
+    subjectTeacherName: snapshotTeacherName,
+    subjectCode: snapshotSubjectCode,
+    subjectName: snapshotSubjectName,
+    step1Skipped: Boolean(step1Skipped),
+    step1SkipReason: step1SkipReason || null,
+    manualTeacherSelected: Boolean(ttMatch.manualTeacherSelected),
+    advisorFlagVerify: Boolean(ttMatch.advisorFlagVerify),
+    notifiedTeachers: ttMatch.notifiedTeachers || [],
+    approvalHistory,
+    stepEnteredAt,
+    lastStepAt: nowIso,
+    destination: destination || null,
+    travelMode: travelMode || 'own',
+    pickupName: pickupName || null,
+    pickupPlate: pickupPlate || null,
+    noReturn: isNoReturn,
+    evidencePhoto: evidencePhoto || null
+  };
+
+  const insertPayload = {
+    request_no: requestNo,
+    student_id: (studentId && studentId.length === 36) ? studentId : '00000000-0000-0000-0000-000000000001',
+    title: title || (isNoReturn ? 'ลากลับบ้าน (ไม่กลับเข้า)' : 'ลากิจธุระจำเป็น'),
+    reason: reason || 'ไปติดต่อทำธุรกรรมและธุระครอบครัว',
+    leave_type: isNoReturn ? 'no_return' : (leaveType || 'personal'),
+    plate_no: plateNo || '1กข 4589 นครนายก (รถจักรยานยนต์)',
+    leave_date: targetLeaveDate,
+    departure_time: depTime.includes(':') && depTime.split(':').length === 2 ? `${depTime}:00` : depTime,
+    expected_return_time: isNoReturn ? '16:00:00' : (retTime.includes(':') && retTime.split(':').length === 2 ? `${retTime}:00` : retTime),
+    status: initialStatus,
+    current_step: initialStep
+  };
+
+  if (studentCode) insertPayload.student_code = studentCode;
+  if (platePhoto) insertPayload.plate_photo = platePhoto;
+  if (parentPhone) insertPayload.parent_phone = parentPhone;
+  if (isNoReturn) insertPayload.no_return = true;
+  if (evidencePhoto) insertPayload.evidence_photo = evidencePhoto;
+  if (destination) insertPayload.destination = destination;
+  if (travelMode) insertPayload.travel_mode = travelMode;
+  if (pickupName) insertPayload.pickup_name = pickupName;
+  if (pickupPlate) insertPayload.pickup_plate = pickupPlate;
 
   if (supabase) {
     try {
@@ -3795,6 +3952,7 @@ app.post('/api/requests', async (req, res) => {
       if (!validStudentId) {
         validStudentId = '00000000-0000-0000-0000-000000000001';
       }
+      insertPayload.student_id = validStudentId;
 
       // ตรวจสอบคำร้องเดิมที่ยังไม่หมดเวลา (ป้องกันการยื่นคำร้องซ้ำ)
       let dupQuery = supabase
@@ -3836,30 +3994,6 @@ app.post('/api/requests', async (req, res) => {
           });
         }
       }
-      
-      const insertPayload = {
-        request_no: requestNo,
-        student_id: validStudentId,
-        title: title || (isNoReturn ? 'ลากลับบ้าน (ไม่กลับเข้า)' : 'ลากิจธุระจำเป็น'),
-        reason: reason || 'ไปติดต่อทำธุรกรรมและธุระครอบครัว',
-        leave_type: isNoReturn ? 'no_return' : (leaveType || 'personal'),
-        plate_no: plateNo || '1กข 4589 นครนายก (รถจักรยานยนต์)',
-        leave_date: targetLeaveDate,
-        departure_time: depTime.includes(':') && depTime.split(':').length === 2 ? `${depTime}:00` : depTime,
-        expected_return_time: isNoReturn ? '16:00:00' : (retTime.includes(':') && retTime.split(':').length === 2 ? `${retTime}:00` : retTime),
-        status: initialStatus,
-        current_step: initialStep
-      };
-
-      if (studentCode) insertPayload.student_code = studentCode;
-      if (platePhoto) insertPayload.plate_photo = platePhoto;
-      if (parentPhone) insertPayload.parent_phone = parentPhone;
-      if (isNoReturn) insertPayload.no_return = true;
-      if (evidencePhoto) insertPayload.evidence_photo = evidencePhoto;
-      if (destination) insertPayload.destination = destination;
-      if (travelMode) insertPayload.travel_mode = travelMode;
-      if (pickupName) insertPayload.pickup_name = pickupName;
-      if (pickupPlate) insertPayload.pickup_plate = pickupPlate;
 
       let { data, error } = await supabase.from('leave_requests').insert([insertPayload]).select();
 
@@ -3880,35 +4014,13 @@ app.post('/api/requests', async (req, res) => {
         error = fb.error;
       }
 
-      // บันทึก Snapshot 4 ขั้นตอนลงใน requests_meta.json
-      const metaPayload = {
-        requestNo,
-        workflowVersion: 4,
-        totalSteps: 4,
-        studentName: reqStudentName || storedProf.full_name || 'นายธนภัทร รัตนโชติ',
-        studentCode: studentCode || storedProf.student_code || '66209010012',
-        deptName: resolvedDept,
-        classroomName: resolvedClass,
-        semesterCode: '1/2569',
-        periodTime: snapshotPeriodTime,
-        approvalHistory,
-        stepEnteredAt,
-        lastStepAt: nowIso,
-        destination: destination || null,
-        travelMode: travelMode || 'own',
-        pickupName: pickupName || null,
-        pickupPlate: pickupPlate || null,
-        noReturn: isNoReturn,
-        evidencePhoto: evidencePhoto || null
-      };
-
       saveRequestMeta(requestNo, metaPayload);
       if (data && data[0] && data[0].id) {
         saveRequestMeta(data[0].id, metaPayload);
       }
 
-      // แจ้งเตือนผู้อนุมัติคิวแรก (ขั้นที่ 1: ครูที่ปรึกษา)
-      const approversInfo = resolveStepApproversInfo(resolvedDept, metaPayload, 4);
+      // แจ้งเตือนผู้อนุมัติคิวแรก (ขั้นที่ 1: ครูรายวิชา หรือ ขั้นที่ 2: ครูที่ปรึกษา กรณีข้ามขั้นที่ 1)
+      const approversInfo = resolveStepApproversInfo(resolvedDept, metaPayload, 5);
       const firstTargetApprover = approversInfo[initialStep];
       const studentDisplay = metaPayload.studentName;
 
@@ -3936,7 +4048,7 @@ app.post('/api/requests', async (req, res) => {
           const otherNames = ttMatch.notifiedTeachers.map(t => `${t.teacherName} (${t.subjectName} ${t.periodTime})`).join(', ');
           multiNotice = `\n• แจ้งทราบครูคาบถัดไป: ${otherNames}`;
         }
-        const verifyNotice = advisorFlagVerify ? `\n• 🚩 หมายเหตุ: นักเรียนเลือกครูรายวิชาด้วยตนเอง (ไม่พบตารางสอน)` : '';
+        const verifyNotice = ttMatch.advisorFlagVerify ? `\n• 🚩 หมายเหตุ: นักเรียนเลือกครูรายวิชาด้วยตนเอง (ไม่พบตารางสอน)` : '';
         sendLineNotification(
           `\n📩 [OnePass คำร้องใหม่ถึงคิวขั้นที่ 1: ครูรายวิชา]\n` +
           `• คำร้อง: ${requestNo}\n` +
@@ -3961,7 +4073,28 @@ app.post('/api/requests', async (req, res) => {
       console.error('Create request error:', err);
     }
   }
-  res.json({ success: true, request: { id: Date.now(), requestNo, currentStep: initialStep, status: initialStatus } });
+
+  // โหมด Offline/Local Storage Fallback
+  const mockId = Date.now();
+  const offlineItem = {
+    id: mockId,
+    ...metaPayload,
+    plateNo: plateNo || '-',
+    title: insertPayload.title,
+    reason: insertPayload.reason,
+    leaveType: insertPayload.leave_type,
+    leaveDate: targetLeaveDate,
+    departureTime: depTime,
+    expectedReturnTime: isNoReturn ? '16:00' : retTime,
+    status: initialStatus,
+    currentStep: initialStep,
+    createdAt: nowIso
+  };
+  saveRequestMeta(requestNo, offlineItem);
+  saveRequestMeta(mockId, offlineItem);
+
+  console.log(`✅ [OFFLINE] Created 5-step leave request ${requestNo} (initialStep=${initialStep}, status=${initialStatus}, skipped=${step1Skipped})`);
+  res.json({ success: true, request: offlineItem, match: ttMatch });
 });
 
 // การอนุมัติคำขอ 5 ขั้นตอนเรียงตามลำดับ พร้อมรองรับการอนุมัติแทน (ข้อ 1, 2, 4, 6, 7, 9, 10)
@@ -4387,7 +4520,55 @@ app.post('/api/requests/:id/approve', authenticateToken, requireRole(['subject_t
       return res.status(500).json({ success: false, reason: err.message });
     }
   }
-  res.json({ success: true });
+
+  // โหมด Offline/Local Fallback สำหรับอนุมัติ
+  const meta = getRequestMeta(requestId) || getRequestMeta(req.params.id) || {};
+  const totalSteps = 5;
+  const currentStep = Number(meta.currentStep || (meta.step1Skipped ? 2 : 1));
+  let nextStep = currentStep + 1;
+  let nextStatus = 'pending_advisor';
+  let qrToken = meta.qrToken || null;
+  const nowIso = new Date().toISOString();
+
+  if (nextStep === 2) nextStatus = 'pending_advisor';
+  else if (nextStep === 3) nextStatus = 'pending_dept_head';
+  else if (nextStep === 4) nextStatus = 'pending_discipline';
+  else if (nextStep === 5) nextStatus = 'pending_deputy';
+  else if (nextStep >= 6) {
+    nextStatus = 'approved';
+    const entropy = crypto.randomBytes(8).toString('hex');
+    qrToken = `PASS-${meta.requestNo || 'OP-2569'}-${entropy}`;
+  }
+
+  const historyList = Array.isArray(meta.approvalHistory) ? [...meta.approvalHistory] : [];
+  const approverDisplayName = user.full_name || user.username;
+  const stepApprovers = resolveStepApproversInfo(meta.deptName || 'แผนกวิชาช่างยนต์', meta, 5);
+  const stepInfo = stepApprovers[currentStep] || { roleLabel: user.role };
+  historyList.push({
+    step: currentStep,
+    role: user.role,
+    roleLabel: stepInfo.roleLabel,
+    approverUsername: user.username,
+    approverName: approverDisplayName,
+    action: 'approved',
+    note: note || `อนุมัติผ่านขั้นที่ ${currentStep}`,
+    actionAt: nowIso
+  });
+
+  const updatedMeta = {
+    ...meta,
+    currentStep: nextStep,
+    status: nextStatus,
+    qrToken,
+    qrGeneratedAt: nextStatus === 'approved' ? nowIso : null,
+    approvalHistory: historyList,
+    lastStepAt: nowIso
+  };
+  saveRequestMeta(requestId, updatedMeta);
+  if (meta.requestNo) saveRequestMeta(meta.requestNo, updatedMeta);
+
+  console.log(`✅ [OFFLINE APPROVE] Request ${meta.requestNo} advanced from step ${currentStep} to ${nextStep} (${nextStatus}) by ${user.username}`);
+  return res.json({ success: true, request: { id: requestId, ...updatedMeta } });
 });
 
 // ปฏิเสธคำขอ: ถูกปฏิเสธขั้นใดจบทันที ต้องระบุเหตุผล และนักเรียนเห็นเหตุผล (ข้อ 5, 9)
@@ -4492,7 +4673,41 @@ app.post('/api/requests/:id/reject', authenticateToken, requireRole(['subject_te
       return res.status(500).json({ success: false, reason: err.message });
     }
   }
-  res.json({ success: true });
+
+  // โหมด Offline/Local Fallback สำหรับ Reject
+  const meta = getRequestMeta(requestId) || getRequestMeta(req.params.id) || {};
+  const currentStep = Number(meta.currentStep || 1);
+  const nowIso = new Date().toISOString();
+  const historyList = Array.isArray(meta.approvalHistory) ? [...meta.approvalHistory] : [];
+  const approverDisplayName = user.full_name || user.username;
+  const stepApprovers = resolveStepApproversInfo(meta.deptName || 'แผนกวิชาช่างยนต์', meta, 5);
+  const stepInfo = stepApprovers[currentStep] || { roleLabel: user.role };
+
+  historyList.push({
+    step: currentStep,
+    role: user.role,
+    roleLabel: stepInfo.roleLabel,
+    approverUsername: user.username,
+    approverName: approverDisplayName,
+    action: 'rejected',
+    note: cleanReason,
+    actionAt: nowIso
+  });
+
+  const updatedMeta = {
+    ...meta,
+    status: 'rejected',
+    rejectionReason: cleanReason,
+    rejectedAtStep: currentStep,
+    rejectedByName: approverDisplayName,
+    rejectedByRole: stepInfo.roleLabel,
+    approvalHistory: historyList,
+    lastStepAt: nowIso
+  };
+  saveRequestMeta(requestId, updatedMeta);
+  if (meta.requestNo) saveRequestMeta(meta.requestNo, updatedMeta);
+
+  return res.json({ success: true, request: { id: requestId, ...updatedMeta } });
 });
 
 // ข้ามขั้นกรณีฉุกเฉิน (Emergency Override) เฉพาะฝ่ายปกครองและรองผู้อำนวยการ พร้อมบันทึกเหตุผลไว้ตรวจสอบ (ข้อ 8, 9)
@@ -4588,7 +4803,26 @@ app.post('/api/requests/:id/emergency-override', authenticateToken, requireRole(
       return res.status(500).json({ success: false, reason: err.message });
     }
   }
-  res.json({ success: true });
+
+  // โหมด Offline/Local Fallback สำหรับ Emergency Override
+  const meta = getRequestMeta(requestId) || getRequestMeta(req.params.id) || {};
+  const entropy = crypto.randomBytes(8).toString('hex');
+  const qrToken = `PASS-${meta.requestNo || 'OP-2569'}-${entropy}`;
+  const nowIso = new Date().toISOString();
+  const updatedMeta = {
+    ...meta,
+    currentStep: 6,
+    status: 'approved',
+    qrToken,
+    qrGeneratedAt: nowIso,
+    emergencyOverride: true,
+    emergencyOverrideBy: user.full_name || user.username,
+    emergencyOverrideReason: cleanEmergencyReason,
+    lastStepAt: nowIso
+  };
+  saveRequestMeta(requestId, updatedMeta);
+  if (meta.requestNo) saveRequestMeta(meta.requestNo, updatedMeta);
+  return res.json({ success: true, message: 'อนุมัติข้ามขั้นตอนกรณีฉุกเฉินเรียบร้อยแล้ว (สร้าง QR Pass สำเร็จ)', request: { id: requestId, ...updatedMeta } });
 });
 
 // ลบ/ยกเลิกคำขอ (ลบออกจากฐานข้อมูล Supabase - ล็อกสิทธิ์ด้วย JWT Middleware)

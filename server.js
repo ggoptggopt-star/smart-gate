@@ -846,7 +846,7 @@ function matchTimetableForLeave({ department, classroom, leaveDate, departureTim
   const retMins = isNoRet ? (16 * 60) : parseTimeToMins(expectedReturnTime || '15:30');
 
   // ตรวจสอบช่วงเวลาพักกลางวัน (12:00 - 13:00 น.) ตามเงื่อนไข: "ถ้าคาบว่าง หรือ ช่วงกลางวัน ให้ผ่านไปที่ ครูที่ปรึกษาเลย"
-  const isLunchBreakTime = (depMins >= 720 && depMins < 780 && retMins <= 780);
+  const isLunchBreakTime = (depMins >= 720 && depMins < 780);
   if (isLunchBreakTime) {
     return {
       matchStatus: 'no_class_skip',
@@ -1787,6 +1787,7 @@ app.get('/api/teachers', async (req, res) => {
     .map(u => ({
       username: u.username,
       fullName: u.full_name,
+      full_name: u.full_name,
       role: u.role,
       dept: u.dept || (u.departments ? u.departments.name : ''),
       isAutoCreated: Boolean(u.isAutoCreated)
@@ -3848,9 +3849,13 @@ app.post('/api/requests', async (req, res) => {
   });
 
   const nowIso = new Date().toISOString();
+  const isLunchTimeDep = (depMinutes >= 720 && depMinutes < 780);
+  const isExplicitSkip = Boolean(req.body.step1Skipped || manualTeacherUsername === 'SKIP_FREE_PERIOD');
   const isManualFree = manualSubjectName && (manualSubjectName.includes('ว่าง') || manualSubjectName.includes('กลางวัน') || manualSubjectName.includes('เที่ยง'));
-  const step1Skipped = Boolean(ttMatch.step1Skipped || isManualFree);
-  const step1SkipReason = isManualFree ? 'ระบุคาบว่าง/ช่วงกลางวันด้วยตนเอง' : (ttMatch.step1SkipReason || (step1Skipped ? 'คาบว่าง / ช่วงกลางวัน' : null));
+  const step1Skipped = Boolean(ttMatch.step1Skipped || isLunchTimeDep || isExplicitSkip || isManualFree);
+  const step1SkipReason = isLunchTimeDep
+    ? 'ช่วงพักกลางวัน (12:00 - 13:00 น.)'
+    : (req.body.step1SkipReason || (isManualFree ? 'ระบุคาบว่าง/ช่วงกลางวันด้วยตนเอง' : (ttMatch.step1SkipReason || (step1Skipped ? 'คาบว่าง / ช่วงกลางวัน' : null))));
 
   // โครงสร้าง 5 ขั้นตอน:
   // ขั้นที่ 1: ครูรายวิชา (ถ้าคาบว่าง หรือช่วงกลางวัน ให้ผ่านไปที่ ครูที่ปรึกษาเลย)
